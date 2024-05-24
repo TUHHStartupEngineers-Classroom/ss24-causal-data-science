@@ -12,3 +12,4 @@ execute:
   
 format-resources:
   - assets/author_pic.jpg
+  - assets/tie_code.theme
