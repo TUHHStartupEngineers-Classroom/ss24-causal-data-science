@@ -417,7 +417,7 @@ Christoph Ihl
 <section>
 <section id="randomized-experiments" class="title-slide slide level1 center" data-stack-name="Randomization">
 <h1>Randomized Experiments</h1>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <style type="text/css">
 div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-style-default .callout-title{background-color:#005e73;color:white}.callout.callout-style-default{border-left:solid #005e73 .3rem;border-right:solid 1px #005e73;border-top:solid 1px #005e73;border-bottom:solid 1px #005e73}
 </style>
@@ -490,21 +490,21 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 </div>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-3-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -631,7 +631,7 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
 <ul>
 <li>Assess the ATE of the program on the weekly earnings in the fourth year after the assignment among 9.240 individuals.</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">library</span>(causalweight)             <span class="co"># load causalweight package that inclkudes the data</span></span>
 <span id="cb1-2"><a></a><span class="fu">data</span>(JC)                          <span class="co"># load JC data</span></span>
 <span id="cb1-3"><a></a>T<span class="ot">=</span>JC<span class="sc">$</span>assignment                   <span class="co"># define treatment (assignment to JC)</span></span>
@@ -705,11 +705,11 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
 </ul></li>
 </ul>
 <div class="fragment">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-6-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -811,21 +811,21 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-7-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -930,7 +930,7 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
 <ul>
 <li>Assess the ATE of the program on the weekly earnings in the fourth year after the assignment among 9.240 individuals.</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(causalweight)             <span class="co"># load causalweight package </span></span>
 <span id="cb5-2"><a></a><span class="fu">library</span>(sandwich)                 <span class="co"># load sandwich package</span></span>
 <span id="cb5-3"><a></a><span class="fu">library</span>(modelsummary)             <span class="co"># load modelsummary package)</span></span>
@@ -949,12 +949,12 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
   
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tinytable_7f2cb0tu5f968o2hresj</title>
+    <title>tinytable_qfznkjawdrwszvl64uvh</title>
     <style>
-.table td.tinytable_css_ofnwlpjekxo0darhxzje, .table th.tinytable_css_ofnwlpjekxo0darhxzje {    border-bottom: solid 0.1em #d3d8dc; }
-.table td.tinytable_css_awdrwszvl64uvhct1r2w, .table th.tinytable_css_awdrwszvl64uvhct1r2w {    text-align: left; }
-.table td.tinytable_css_sj896rho98ie2ljxmghi, .table th.tinytable_css_sj896rho98ie2ljxmghi {    text-align: center; }
-.table td.tinytable_css_gt99x3opwli5oto18a5u, .table th.tinytable_css_gt99x3opwli5oto18a5u {    border-bottom: solid 0.05em black; }
+.table td.tinytable_css_ct1r2wsj896rho98ie2l, .table th.tinytable_css_ct1r2wsj896rho98ie2l {    border-bottom: solid 0.1em #d3d8dc; }
+.table td.tinytable_css_j8q2uh9wj5s3q8mpb9mq, .table th.tinytable_css_j8q2uh9wj5s3q8mpb9mq {    text-align: left; }
+.table td.tinytable_css_xforemi9c0ap9eg7z59q, .table th.tinytable_css_xforemi9c0ap9eg7z59q {    text-align: center; }
+.table td.tinytable_css_jonff2vk29k6isnstyxk, .table th.tinytable_css_jonff2vk29k6isnstyxk {    border-bottom: solid 0.05em black; }
     </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -972,7 +972,7 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
 
   
     <div class="container">
-      <table class="table table-borderless" id="tinytable_7f2cb0tu5f968o2hresj" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_qfznkjawdrwszvl64uvh" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1007,12 +1007,12 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
     </div>
 
     <script>
-      function styleCell_tinytable_nxordx1uvq9r94yddrwy(i, j, css_id) {
-        var table = document.getElementById("tinytable_7f2cb0tu5f968o2hresj");
+      function styleCell_tinytable_rhxzje6qt4ljar8mpair(i, j, css_id) {
+        var table = document.getElementById("tinytable_qfznkjawdrwszvl64uvh");
         table.rows[i].cells[j].classList.add(css_id);
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_7f2cb0tu5f968o2hresj');
+        var table = document.getElementById('tinytable_qfznkjawdrwszvl64uvh');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1020,8 +1020,8 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_tinytable_nxordx1uvq9r94yddrwy(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_7f2cb0tu5f968o2hresj");
+      function spanCell_tinytable_rhxzje6qt4ljar8mpair(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_qfznkjawdrwszvl64uvh");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1048,22 +1048,22 @@ ATE_{as} &amp;= \underbrace{\mathbb{E}[Y_i(1) - Y_i(0)]}_{ATE_{cs}} \\ &amp;+ \u
         targetCell.colSpan = colspan;
       }
 
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(0, 0, 'tinytable_css_ofnwlpjekxo0darhxzje') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(0, 1, 'tinytable_css_ofnwlpjekxo0darhxzje') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(0, 0, 'tinytable_css_awdrwszvl64uvhct1r2w') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(1, 0, 'tinytable_css_awdrwszvl64uvhct1r2w') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(2, 0, 'tinytable_css_awdrwszvl64uvhct1r2w') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(3, 0, 'tinytable_css_awdrwszvl64uvhct1r2w') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(4, 0, 'tinytable_css_awdrwszvl64uvhct1r2w') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(5, 0, 'tinytable_css_awdrwszvl64uvhct1r2w') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(0, 1, 'tinytable_css_sj896rho98ie2ljxmghi') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(1, 1, 'tinytable_css_sj896rho98ie2ljxmghi') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(2, 1, 'tinytable_css_sj896rho98ie2ljxmghi') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(3, 1, 'tinytable_css_sj896rho98ie2ljxmghi') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(4, 1, 'tinytable_css_sj896rho98ie2ljxmghi') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(5, 1, 'tinytable_css_sj896rho98ie2ljxmghi') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(4, 0, 'tinytable_css_gt99x3opwli5oto18a5u') })
-window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94yddrwy(4, 1, 'tinytable_css_gt99x3opwli5oto18a5u') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(0, 0, 'tinytable_css_ct1r2wsj896rho98ie2l') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(0, 1, 'tinytable_css_ct1r2wsj896rho98ie2l') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(0, 0, 'tinytable_css_j8q2uh9wj5s3q8mpb9mq') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(1, 0, 'tinytable_css_j8q2uh9wj5s3q8mpb9mq') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(2, 0, 'tinytable_css_j8q2uh9wj5s3q8mpb9mq') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(3, 0, 'tinytable_css_j8q2uh9wj5s3q8mpb9mq') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(4, 0, 'tinytable_css_j8q2uh9wj5s3q8mpb9mq') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(5, 0, 'tinytable_css_j8q2uh9wj5s3q8mpb9mq') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(0, 1, 'tinytable_css_xforemi9c0ap9eg7z59q') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(1, 1, 'tinytable_css_xforemi9c0ap9eg7z59q') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(2, 1, 'tinytable_css_xforemi9c0ap9eg7z59q') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(3, 1, 'tinytable_css_xforemi9c0ap9eg7z59q') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(4, 1, 'tinytable_css_xforemi9c0ap9eg7z59q') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(5, 1, 'tinytable_css_xforemi9c0ap9eg7z59q') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(4, 0, 'tinytable_css_jonff2vk29k6isnstyxk') })
+window.addEventListener('load', function () { styleCell_tinytable_rhxzje6qt4ljar8mpair(4, 1, 'tinytable_css_jonff2vk29k6isnstyxk') })
     </script>
 
   
@@ -1095,7 +1095,7 @@ window.addEventListener('load', function () { styleCell_tinytable_nxordx1uvq9r94
 <ul>
 <li>Assess the ATE of the program on the weekly earnings in the fourth year after the assignment among 9.240 individuals.</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">library</span>(causalweight)             <span class="co"># load causalweight package </span></span>
 <span id="cb6-2"><a></a><span class="fu">library</span>(boot)                     <span class="co"># load boot package</span></span>
 <span id="cb6-3"><a></a><span class="fu">data</span>(JC)                          <span class="co"># load JC data</span></span>
@@ -1173,7 +1173,7 @@ t2*  16.05513 -0.02075945    3.954810</code></pre>
 <li><code>treatmentorder</code>: Reversed order of questions about professional and personal preferences (“framing”).</li>
 </ul></li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">library</span>(causalweight)             <span class="co"># load causalweight package </span></span>
 <span id="cb10-2"><a></a><span class="fu">data</span>(wexpect)                     <span class="co"># load wexpect data</span></span>
 <span id="cb10-3"><a></a>T1<span class="ot">=</span>wexpect<span class="sc">$</span>treatmentinformation   <span class="co"># define first treatment (wage information)</span></span>
@@ -1365,21 +1365,21 @@ window.addEventListener('load', function () { styleCell_tinytable_q2fm8wfrya6so0
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1404,7 +1404,7 @@ window.addEventListener('load', function () { styleCell_tinytable_q2fm8wfrya6so0
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">library</span>(datarium)                 <span class="co"># load datarium package</span></span>
 <span id="cb11-2"><a></a><span class="fu">library</span>(np)                       <span class="co"># load np package</span></span>
 <span id="cb11-3"><a></a><span class="fu">data</span>(marketing)                   <span class="co"># load marketing data</span></span>
@@ -1423,15 +1423,15 @@ Multistart 1 of 1 |
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">plot</span>(results, <span class="at">plot.errors.method=</span><span class="st">"asymptotic"</span>) <span class="co"># plot regression function</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-14-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-14-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="fu">library</span>(datarium)                 <span class="co"># load datarium package</span></span>
 <span id="cb14-2"><a></a><span class="fu">library</span>(np)                       <span class="co"># load np package</span></span>
 <span id="cb14-3"><a></a><span class="fu">data</span>(marketing)                   <span class="co"># load marketing data</span></span>
@@ -1450,9 +1450,9 @@ Multistart 1 of 1 |
 </div>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">plot</span>(results, <span class="at">gradients=</span><span class="cn">TRUE</span>, <span class="at">plot.errors.method=</span><span class="st">"asymptotic"</span>) <span class="co"># plot effects</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-15-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1477,11 +1477,11 @@ Multistart 1 of 1 |
 <ul>
 <li><code>Pre-treatment covariates</code></li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-16-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1492,11 +1492,11 @@ Multistart 1 of 1 |
 <ul>
 <li><code>Post-treatment covariates</code></li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-17-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="03_exper_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1524,7 +1524,7 @@ Multistart 1 of 1 |
 <ul>
 <li>Assess the awareness about environmental issues of 522 university students after randomly receiving or not receiving a leaflet with information about the environmental and social implications of coffee production.</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">library</span>(causalweight)             <span class="co"># load causalweight package </span></span>
 <span id="cb17-2"><a></a><span class="fu">library</span>(sandwich)                 <span class="co"># load sandwich package</span></span>
 <span id="cb17-3"><a></a><span class="fu">data</span>(coffeeleaflet)               <span class="co"># load coffeeleaflet data</span></span>
@@ -1540,12 +1540,12 @@ Multistart 1 of 1 |
   
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tinytable_kgy9rxl4nbepwrmdbh6f</title>
+    <title>tinytable_000epqhktawt9i57fg7a</title>
     <style>
-.table td.tinytable_css_b5i17nkworow5izk000e, .table th.tinytable_css_b5i17nkworow5izk000e {    border-bottom: solid 0.1em #d3d8dc; }
-.table td.tinytable_css_rz1b0bu09u2g3oa9f6yu, .table th.tinytable_css_rz1b0bu09u2g3oa9f6yu {    text-align: left; }
-.table td.tinytable_css_kpsc37y8c4b3o92gpjjb, .table th.tinytable_css_kpsc37y8c4b3o92gpjjb {    text-align: center; }
-.table td.tinytable_css_jry2byujm9pu0yc4dqqw, .table th.tinytable_css_jry2byujm9pu0yc4dqqw {    border-bottom: solid 0.05em black; }
+.table td.tinytable_css_euimo2rfkquw8qy4ra7k, .table th.tinytable_css_euimo2rfkquw8qy4ra7k {    border-bottom: solid 0.1em #d3d8dc; }
+.table td.tinytable_css_pjjbjry2byujm9pu0yc4, .table th.tinytable_css_pjjbjry2byujm9pu0yc4 {    text-align: left; }
+.table td.tinytable_css_dqqwv0vdwj22mw55dj78, .table th.tinytable_css_dqqwv0vdwj22mw55dj78 {    text-align: center; }
+.table td.tinytable_css_zze6setfg0i7a9qr1p7t, .table th.tinytable_css_zze6setfg0i7a9qr1p7t {    border-bottom: solid 0.05em black; }
     </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -1563,7 +1563,7 @@ Multistart 1 of 1 |
 
   
     <div class="container">
-      <table class="table table-borderless" id="tinytable_kgy9rxl4nbepwrmdbh6f" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+      <table class="table table-borderless" id="tinytable_000epqhktawt9i57fg7a" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
         <thead>
         
               <tr>
@@ -1614,12 +1614,12 @@ Multistart 1 of 1 |
     </div>
 
     <script>
-      function styleCell_tinytable_v2xrrt9oibhuh877y799(i, j, css_id) {
-        var table = document.getElementById("tinytable_kgy9rxl4nbepwrmdbh6f");
+      function styleCell_tinytable_4im4kgy9rxl4nbepwrmd(i, j, css_id) {
+        var table = document.getElementById("tinytable_000epqhktawt9i57fg7a");
         table.rows[i].cells[j].classList.add(css_id);
       }
       function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_kgy9rxl4nbepwrmdbh6f');
+        var table = document.getElementById('tinytable_000epqhktawt9i57fg7a');
         var newRow = table.insertRow(i);
         var newCell = newRow.insertCell(0);
         newCell.setAttribute("colspan", colspan);
@@ -1627,8 +1627,8 @@ Multistart 1 of 1 |
         // this may be unsafe, but innerText does not interpret <br>
         newCell.innerHTML = content;
       }
-      function spanCell_tinytable_v2xrrt9oibhuh877y799(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_kgy9rxl4nbepwrmdbh6f");
+      function spanCell_tinytable_4im4kgy9rxl4nbepwrmd(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_000epqhktawt9i57fg7a");
         const targetRow = table.rows[i];
         const targetCell = targetRow.cells[j];
         for (let r = 0; r < rowspan; r++) {
@@ -1655,30 +1655,30 @@ Multistart 1 of 1 |
         targetCell.colSpan = colspan;
       }
 
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(0, 0, 'tinytable_css_b5i17nkworow5izk000e') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(0, 1, 'tinytable_css_b5i17nkworow5izk000e') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(0, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(1, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(2, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(3, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(4, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(5, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(6, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(7, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(8, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(9, 0, 'tinytable_css_rz1b0bu09u2g3oa9f6yu') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(0, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(1, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(2, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(3, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(4, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(5, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(6, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(7, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(8, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(9, 1, 'tinytable_css_kpsc37y8c4b3o92gpjjb') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(8, 0, 'tinytable_css_jry2byujm9pu0yc4dqqw') })
-window.addEventListener('load', function () { styleCell_tinytable_v2xrrt9oibhuh877y799(8, 1, 'tinytable_css_jry2byujm9pu0yc4dqqw') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(0, 0, 'tinytable_css_euimo2rfkquw8qy4ra7k') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(0, 1, 'tinytable_css_euimo2rfkquw8qy4ra7k') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(0, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(1, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(2, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(3, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(4, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(5, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(6, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(7, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(8, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(9, 0, 'tinytable_css_pjjbjry2byujm9pu0yc4') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(0, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(1, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(2, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(3, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(4, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(5, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(6, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(7, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(8, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(9, 1, 'tinytable_css_dqqwv0vdwj22mw55dj78') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(8, 0, 'tinytable_css_zze6setfg0i7a9qr1p7t') })
+window.addEventListener('load', function () { styleCell_tinytable_4im4kgy9rxl4nbepwrmd(8, 1, 'tinytable_css_zze6setfg0i7a9qr1p7t') })
     </script>
 
   

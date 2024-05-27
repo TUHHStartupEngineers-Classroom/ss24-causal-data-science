@@ -417,7 +417,7 @@ Christoph Ihl
 <section>
 <section id="introduction" class="title-slide slide level1 center" data-stack-name="Intro">
 <h1>Introduction</h1>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <style type="text/css">
 div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-style-default .callout-title{background-color:#005e73;color:white}.callout.callout-style-default{border-left:solid #005e73 .3rem;border-right:solid 1px #005e73;border-top:solid 1px #005e73;border-bottom:solid 1px #005e73}
 </style>
@@ -611,7 +611,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="co"># Get the indvidual ATEs (pseudo-outcomes)</span></span>
 <span id="cb1-2"><a></a>data<span class="sc">$</span>ate_i <span class="ot">&lt;-</span> dml_irm_forest[[<span class="st">"psi_b"</span>]] <span class="co"># get numerator of score function, which is equal to pseudo outcome</span></span>
 <span id="cb1-3"><a></a>mean_ate <span class="ot">=</span> <span class="fu">mean</span>(data<span class="sc">$</span>ate_i) <span class="co"># mean of pseudo outcomes = ATE</span></span>
@@ -619,7 +619,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <span id="cb1-5"><a></a><span class="fu">library</span>(estimatr) <span class="co"># for linear robust post estimation</span></span>
 <span id="cb1-6"><a></a><span class="fu">summary</span>(<span class="fu">lm_robust</span>(ate_i <span class="sc">~</span> hown, <span class="at">data =</span> data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>Estimates and significance testing of the effect of target variables
      Estimate. Std. Error t value Pr(&gt;|t|)    
@@ -644,7 +644,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(np) <span class="co"># for kernel post estimation</span></span>
 <span id="cb4-2"><a></a>age <span class="ot">=</span> data<span class="sc">$</span>age            </span>
 <span id="cb4-3"><a></a>ate_i <span class="ot">=</span> data<span class="sc">$</span>ate_i                </span>
@@ -718,7 +718,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(hdm) <span class="co"># for the data</span></span>
 <span id="cb5-2"><a></a><span class="fu">library</span>(grf) <span class="co"># generalized random forests, could also use mlr3</span></span>
 <span id="cb5-3"><a></a></span>
@@ -740,7 +740,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 <span id="cb5-19"><a></a>cate_sl <span class="ot">=</span> <span class="fu">predict</span>(rf,T1X)<span class="sc">$</span>predictions <span class="sc">-</span> <span class="fu">predict</span>(rf,T0X)<span class="sc">$</span>predictions</span>
 <span id="cb5-20"><a></a><span class="fu">hist</span>(cate_sl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># Implement the T-Learner</span></span>
 <span id="cb6-2"><a></a>rfmu1 <span class="ot">=</span> <span class="fu">regression_forest</span>(X[T<span class="sc">==</span><span class="dv">1</span>,],Y[T<span class="sc">==</span><span class="dv">1</span>])</span>
 <span id="cb6-3"><a></a>rfmu0 <span class="ot">=</span> <span class="fu">regression_forest</span>(X[T<span class="sc">==</span><span class="dv">0</span>,],Y[T<span class="sc">==</span><span class="dv">0</span>])</span>
@@ -748,11 +748,11 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 <span id="cb6-5"><a></a><span class="fu">hist</span>(cate_tl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="06_hte_files/figure-revealjs/unnamed-chunk-8-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="06_hte_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -911,7 +911,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">library</span>(hdm) <span class="co"># for the data</span></span>
 <span id="cb7-2"><a></a><span class="fu">library</span>(causalDML) <span class="co"># generalized random forests, could also use mlr3</span></span>
 <span id="cb7-3"><a></a></span>
@@ -1072,11 +1072,11 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="06_hte_files/figure-revealjs/unnamed-chunk-10-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="06_hte_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
 </figure>
 </div>
 </div>

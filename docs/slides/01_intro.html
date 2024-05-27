@@ -417,7 +417,7 @@ Christoph Ihl
 <section>
 <section id="course-overview" class="title-slide slide level1 center" data-stack-name="Overview">
 <h1>Course Overview</h1>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <style type="text/css">
 div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-style-default .callout-title{background-color:#005e73;color:white}.callout.callout-style-default{border-left:solid #005e73 .3rem;border-right:solid 1px #005e73;border-top:solid 1px #005e73;border-bottom:solid 1px #005e73}
 </style>
@@ -644,7 +644,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <li>Correlation, or better association, is not (entirely) causation, if there is confounding association due to a common cause, i.e.&nbsp;a <strong><em>confounder</em></strong>.</li>
 <li>E.g. Consumers’ purchase intent is a common cause of the amount spent on search engine marketing (SEM) (esp.&nbsp;for branded vs.&nbsp;non-branded ads) and sales (especially for frequent consumers):</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">library</span>(ggdag)</span>
@@ -669,7 +669,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 </details>
 
 </div>
-<img data-src="01_intro_files/figure-revealjs/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><div class="source">
+<img data-src="01_intro_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"><div class="source">
 <p>(Source: <a href="http://faculty.haas.berkeley.edu/stadelis/Tadelis.pdf">Blake et al.&nbsp;(2015). Consumer heterogeneity and paid search effectiveness: A large‐scale field experiment. Econometrica, 83(1), 155-174.</a>)</p>
 </div>
 </section></section>
@@ -756,7 +756,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 </section>
 <section id="motivating-example-gender-pay-gap-4" class="slide level2">
 <h2>Motivating Example: Gender Pay Gap (4)</h2>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
@@ -774,7 +774,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 </details>
 
 </div>
-<img data-src="01_intro_files/figure-revealjs/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="01_intro_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
 <section id="simpsons-paradox-1" class="slide level2">
 <h2>Simpson’s Paradox (1)</h2>
 <ul>
@@ -815,7 +815,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <section id="simpsons-paradox-2" class="slide level2">
 <h2>Simpson’s Paradox (2)</h2>
 
-<img data-src="01_intro_files/figure-revealjs/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><ul>
+<img data-src="01_intro_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"><ul>
 <li>Here, we would correctly infer that people with a healthy lifestyle earn more on average ($181.74).</li>
 </ul>
 </section>
@@ -826,7 +826,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(ggdag)</span>
@@ -849,9 +849,9 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <span id="cb3-18"><a></a>  <span class="fu">theme_dag</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="01_intro_files/figure-revealjs/unnamed-chunk-6-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="01_intro_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -860,7 +860,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <li>Management as “mediator”</li>
 </ul>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(ggdag)</span>
@@ -883,9 +883,9 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <span id="cb4-18"><a></a>  <span class="fu">theme_dag</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="01_intro_files/figure-revealjs/unnamed-chunk-7-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="01_intro_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
 </figure>
 </div>
 </div>

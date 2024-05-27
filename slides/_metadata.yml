@@ -50,3 +50,4 @@ format:
     resources:
       - slides/_images/
       - assets/author_pic.jpg
+      - tie_code.theme
