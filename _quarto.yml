@@ -9,8 +9,12 @@ project:
     - slides/05_dml.qmd
     - slides/06_hte.qmd
 execute:
-  freeze: auto  # re-render only when source changes
+  freeze: false  # re-render only when source changes
   
 format-resources:
   - assets/author_pic.jpg
   - assets/tie_code.theme
+  
+format:
+  revealjs: 
+    highlight-style: assets/tie_code.theme
