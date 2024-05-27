@@ -300,7 +300,7 @@ plot(np_model)  # plot the kernel regression
 
 ```
 
-![](_images/_6/cate_age.png){.r-stretch fig-align="center" width=750}
+![](_images/6/cate_age.png){.r-stretch fig-align="center" width=750}
 
 :::
 
@@ -595,7 +595,7 @@ hist(dr$cates[,1])
 ::: {.column width="50%"}
 
 
-![](_images/_6/dr_cates.png){.r-stretch fig-align="center" width=750}
+![](_images/6/dr_cates.png){.r-stretch fig-align="center" width=750}
 
 
 :::
