@@ -1,7 +1,7 @@
 format:
   revealjs: 
     ## PLUGINS
-    theme: [../assets/tie.scss, ../assets/tie-logo.scss]
+    theme: [../assets/custom.scss, ../assets/tie-logo.scss]
     css: ../assets/fonts.css
     highlight-style: ../assets/tie_code.theme
     include-in-header:
@@ -50,4 +50,4 @@ format:
     resources:
       - slides/_images/
       - assets/author_pic.jpg
-      - tie_code.theme
+      - assets/tie_code.theme
