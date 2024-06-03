@@ -8,7 +8,7 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.554">
+  <meta name="generator" content="quarto-1.4.536">
 
   <meta name="author" content="Christoph Ihl">
   <title>(4) Observed Confounding</title>
@@ -391,6 +391,8 @@
       margin-right: 0; 
     }
   </style>
+  <script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
   <link rel="icon" type="image/svg" sizes="16x16" href="https://raw.githubusercontent.com/christophihl/TIE_website/main/assets/images/icon.svg">
 </head>
 <body class="quarto-light">
@@ -412,7 +414,7 @@ Christoph Ihl
     </div>
 </div>
 
-  <p class="date">Monday, 27. May 2024</p>
+  <p class="date">Monday, 3. June 2024</p>
 </section>
 <section>
 <section id="identification" class="title-slide slide level1 center" data-stack-name="Identification">
@@ -743,129 +745,36 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <span id="cb1-12"><a></a>ols <span class="ot">=</span> <span class="fu">lm</span>(Y <span class="sc">~</span> T <span class="sc">+</span> X <span class="sc">+</span> DXdemeaned)                <span class="co"># run OLS regression</span></span>
 <span id="cb1-13"><a></a><span class="fu">modelsummary</span>(ols, <span class="at">vcov =</span> sandwich<span class="sc">::</span>vcovHC, <span class="at">estimate =</span> <span class="st">"est = {estimate} (se = {std.error}, t = {statistic}){stars}"</span>, <span class="at">statistic =</span> <span class="st">"p = {p.value}, CI = [{conf.low}, {conf.high}]"</span>, <span class="at">gof_map =</span> <span class="fu">c</span>(<span class="st">"r.squared"</span>), <span class="at">coef_omit =</span> <span class="st">"X"</span>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
- 
-
-  
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tinytable_418i2gk38zyydi5ho9y5</title>
-    <style>
-.table td.tinytable_css_nngbuyqmi28smp3mvm8p, .table th.tinytable_css_nngbuyqmi28smp3mvm8p {    border-bottom: solid 0.1em #d3d8dc; }
-.table td.tinytable_css_d4gwvzfvb6qwls50nqc7, .table th.tinytable_css_d4gwvzfvb6qwls50nqc7 {    text-align: left; }
-.table td.tinytable_css_cew9o18fle1s9udnkdch, .table th.tinytable_css_cew9o18fle1s9udnkdch {    text-align: center; }
-.table td.tinytable_css_vesx3p3cdngv5knh664p, .table th.tinytable_css_vesx3p3cdngv5knh664p {    border-bottom: solid 0.05em black; }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
-      },
-      svg: {
-        fontCache: 'global'
-      }
-    };
-    </script>
-  
-
-  
-    <div class="container">
-      <table class="table table-borderless" id="tinytable_418i2gk38zyydi5ho9y5" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
-        <thead>
-        
-              <tr>
-                <th scope="col"> </th>
-                <th scope="col">(1)</th>
-              </tr>
-        </thead>
-        
-        <tbody>
-                <tr>
-                  <td>(Intercept)</td>
-                  <td>est = 7161.163 (se = 3975.959, t = 1.801)+</td>
-                </tr>
-                <tr>
-                  <td>           </td>
-                  <td>p = 0.072, CI = [-653.935, 14976.260]     </td>
-                </tr>
-                <tr>
-                  <td>T          </td>
-                  <td>est = 1583.468 (se = 711.171, t = 2.227)* </td>
-                </tr>
-                <tr>
-                  <td>           </td>
-                  <td>p = 0.027, CI = [185.600, 2981.336]       </td>
-                </tr>
-                <tr>
-                  <td>R2         </td>
-                  <td>0.104                                     </td>
-                </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <script>
-      function styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(i, j, css_id) {
-        var table = document.getElementById("tinytable_418i2gk38zyydi5ho9y5");
-        table.rows[i].cells[j].classList.add(css_id);
-      }
-      function insertSpanRow(i, colspan, content) {
-        var table = document.getElementById('tinytable_418i2gk38zyydi5ho9y5');
-        var newRow = table.insertRow(i);
-        var newCell = newRow.insertCell(0);
-        newCell.setAttribute("colspan", colspan);
-        // newCell.innerText = content;
-        // this may be unsafe, but innerText does not interpret <br>
-        newCell.innerHTML = content;
-      }
-      function spanCell_tinytable_w8mmo0eot9hzgtm3yxtu(i, j, rowspan, colspan) {
-        var table = document.getElementById("tinytable_418i2gk38zyydi5ho9y5");
-        const targetRow = table.rows[i];
-        const targetCell = targetRow.cells[j];
-        for (let r = 0; r < rowspan; r++) {
-          // Only start deleting cells to the right for the first row (r == 0)
-          if (r === 0) {
-            // Delete cells to the right of the target cell in the first row
-            for (let c = colspan - 1; c > 0; c--) {
-              if (table.rows[i + r].cells[j + c]) {
-                table.rows[i + r].deleteCell(j + c);
-              }
-            }
-          }
-          // For rows below the first, delete starting from the target column
-          if (r > 0) {
-            for (let c = colspan - 1; c >= 0; c--) {
-              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
-                table.rows[i + r].deleteCell(j);
-              }
-            }
-          }
-        }
-        // Set rowspan and colspan of the target cell
-        targetCell.rowSpan = rowspan;
-        targetCell.colSpan = colspan;
-      }
-
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(0, 0, 'tinytable_css_nngbuyqmi28smp3mvm8p') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(0, 1, 'tinytable_css_nngbuyqmi28smp3mvm8p') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(0, 0, 'tinytable_css_d4gwvzfvb6qwls50nqc7') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(1, 0, 'tinytable_css_d4gwvzfvb6qwls50nqc7') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(2, 0, 'tinytable_css_d4gwvzfvb6qwls50nqc7') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(3, 0, 'tinytable_css_d4gwvzfvb6qwls50nqc7') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(4, 0, 'tinytable_css_d4gwvzfvb6qwls50nqc7') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(5, 0, 'tinytable_css_d4gwvzfvb6qwls50nqc7') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(0, 1, 'tinytable_css_cew9o18fle1s9udnkdch') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(1, 1, 'tinytable_css_cew9o18fle1s9udnkdch') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(2, 1, 'tinytable_css_cew9o18fle1s9udnkdch') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(3, 1, 'tinytable_css_cew9o18fle1s9udnkdch') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(4, 1, 'tinytable_css_cew9o18fle1s9udnkdch') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(5, 1, 'tinytable_css_cew9o18fle1s9udnkdch') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(4, 0, 'tinytable_css_vesx3p3cdngv5knh664p') })
-window.addEventListener('load', function () { styleCell_tinytable_w8mmo0eot9hzgtm3yxtu(4, 1, 'tinytable_css_vesx3p3cdngv5knh664p') })
-    </script>
-
-  
+<table class="table" data-quarto-postprocess="true" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;(1)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">est = 7161.163 (se = 3975.959, t = 1.801)+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">p = 0.072, CI = [-653.935, 14976.260]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">T</td>
+<td style="text-align: center;">est = 1583.468 (se = 711.171, t = 2.227)*</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; box-shadow: 0px 1.5px;"></td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">p = 0.027, CI = [185.600, 2981.336]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">R2</td>
+<td style="text-align: center;">0.104</td>
+</tr>
+</tbody>
+</table>
 
 
 </div>
@@ -1888,24 +1797,6 @@ Thank you for your attention!
         // clear code selection
         e.clearSelection();
       });
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-        }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
-            }
-          }
-        }
       function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
@@ -1942,11 +1833,7 @@ Thank you for your attention!
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
-          }
+          return note.innerHTML;
         });
       }
       const findCites = (el) => {

@@ -17,3 +17,5 @@ Presentations with Reveal.js
 * [(3) Randomized Experiments](https://tuhhstartupengineers-classroom.github.io/ss24-causal-data-science/slides/03_exper.html)
 * [(4) Observed Confounding](https://tuhhstartupengineers-classroom.github.io/ss24-causal-data-science/slides/04_ob_conf.html)
 * [(5) Double Machine Learning](https://tuhhstartupengineers-classroom.github.io/ss24-causal-data-science/slides/05_dml.html)
+* [(6) Effect Heterogeneity](https://tuhhstartupengineers-classroom.github.io/ss24-causal-data-science/slides/06_hte.html)
+* [(7) Unobserved Confounding and Instrumental Variables](https://tuhhstartupengineers-classroom.github.io/ss24-causal-data-science/slides/07_unob_conf.html)

@@ -1,0 +1,1474 @@
+---
+# TITLE & AUTHOR
+title: "(7) Unobserved Confounding and Instrumental Variables"
+subtitle: "Causal Data Science for Business Analytics"
+author: "Christoph Ihl"
+institute: "Hamburg University of Technology"
+date: today
+date-format: "dddd, D. MMMM YYYY"
+# FORMAT OPTIONS
+format: 
+  revealjs:
+    width: 1600
+    height: 900
+    footer: "Causal Data Science: (7) Unobserved Confounding and Instrumental Variables"
+    slide-number: true
+---
+
+
+
+# Partial Identification {data-stack-name="Partial Identification"}
+
+
+```{r}
+#| include: false
+sysfonts::font_add_google("Poppins", "Poppins", regular.wt = 300)
+showtext::showtext_auto()
+source("../assets/setup-ggplot2-tie.R")
+```
+
+
+```{scss}
+#| echo: false
+div.callout-note {
+  border-left-color: #00C1D4 !important;
+}
+
+div.callout-note.callout-style-default .callout-title {
+  background-color: #005e73;
+  color: white;
+}
+
+.callout.callout-style-default {
+  border-left: solid #005e73 .3rem;
+  border-right: solid 1px #005e73;
+  border-top: solid 1px #005e73;
+  border-bottom: solid 1px #005e73;
+}
+
+```
+
+
+
+## Motivation {.smaller}
+
+- `Conditional Independence / Unconfoundedness`:  assumption is **not testable**.
+- "The Law of Decreasing Credibility: The credibility of inference decreases with the strength of the assumptions maintained." [(Manski, 2003)](https://link.springer.com/book/10.1007/b97478)
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+```{r, engine = 'tikz'}
+#| echo: false
+\definecolor{tuhh}{HTML}{00C1D4}
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {T};
+  \node[circle,draw,fill=gray!50,minimum size=1cm] (X2) at (2,2) {X};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[rectangle,draw,gray!50,fill=gray!50,minimum width=0.1cm] (X4) at (2,2.7) {};
+  \node[circle,draw,minimum size=1cm] (X5) at (4,2) {U};
+
+  % Solid edges
+  \draw[->, thick] (X2) -- (X1);
+  \draw[->, thick] (X2) -- (X3);
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, dashed, thick] (X5) -- (X3);
+  \draw[->, dashed, thick] (X5) -- (X1);
+
+  % Dashed edge
+  \draw[thick, tuhh, dashed] (X1) to[bend left=30] (X4);
+
+\end{tikzpicture}
+```
+
+:::
+
+
+
+::: {.column width="50%"}
+
+
+$$
+\begin{align*}
+\tau_{\text{ATE}} &= \mathbb{E}[Y_i(1)] - \mathbb{E}[Y_i(0)] \\
+&= \mathbb{E}_{\mathbf{X, U}}[\mathbb{E}[Y_i|T_i=1, \mathbf{X_i, U_i}] - \mathbb{E}[Y_i|T_i=0, \mathbf{X_i, U_i}]] \\
+& \color{#FF7E15}{\stackrel{?}{\approx}} \mathbb{E}_{\mathbf{X}}[\mathbb{E}[Y_i|T_i=1, \mathbf{X_i}] - \mathbb{E}[Y_i|T_i=0, \mathbf{X_i}]]
+\end{align*}
+$$
+
+- "Questionable" equality is required to hold for a `point estimate` of the ATE.
+- `Partial Identification` is the method to estimate the ATE under weaker assumptions yielding a `set estimate` - an interval with upper and lower bounds.
+- Trade-off between assumptions and width of the interval.
+
+
+
+:::
+
+
+:::
+
+
+
+
+## No Assumption (Worst-case) Bounds  {.smaller}
+
+- Assume potential outcomes are bounded: $y^{LB} \leq Y_i(t) \leq y^{UB}$, $\forall t$.
+  - Bounds of ITE: $y^{LB} - y^{UB} \leq Y_i(1) - Y_i(0) \leq y^{UB} - y^{LB}$
+  - Bounds of ATE: $y^{LB} - y^{UB} \leq \mathbb{E}[Y_i(1) - Y_i(0)] \leq y^{UB} - y^{LB}$
+  - Interval length: $2(y^{UB} - y^{LB})$
+- But the ATE interval length can actually be halved. How?
+  
+::: {.fragment}
+- Let's use the *`observational`-<span style="color: #FF7E15;">counterfactual</span> decomposition* of the ATE:
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &= \mathbb{E}[Y_i(1)] - \mathbb{E}[Y_i(0)] \\
+&= P(T_i=1)\color{#00C1D4}{\mathbb{E}[Y_i(1)|T_i=1]} + P(T_1=0)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - P(T_i=1)\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - P(T_i=0)\color{#00C1D4}{\mathbb{E}[Y_i(0)|T_i=0]}\\
+&= P(T_i=1)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + P(T_i=0)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - P(T_i=1)\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - P(T_i=0)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&:= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+\end{align*}
+$$
+
+:::
+
+
+
+::: {.fragment}
+
+- Upper bound: $\mathbb{E}[Y_i(1) - Y_i(0)] \leq  p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{y^{UB}} - p\color{#00C1D4}{y^{LB}} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}$
+- Lower bound: $\mathbb{E}[Y_i(1) - Y_i(0)] \geq  p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{y^{LB}} - p\color{#00C1D4}{y^{UB}} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}$
+- Interval length: $(1-p)y^{UB} - py^{LB} - (1-p)y^{LB} + py^{UB} = y^{UB} - y^{LB}$
+- Unfortunately, the interval always contains 0. We need more assumptions!
+
+:::
+
+
+## Monotone Treatment Response (MTR) Bounds {.smaller}
+
+- Assume that the treatment has a **non-negative** monotone effect on the outcome: $Y_i(1) \geq Y_i(0)$, $\forall i$.
+  - (Works also with a **non-positive** monotone effect).
+  - Lower bound of ITE: $Y_i(1) - Y_i(0) \geq  0$.
+  - Lower bound of ATE: $\mathbb{E}[Y_i(1) - Y_i(0)] \geq 0$.
+  - Why?
+
+::: {.fragment}
+
+- First use the assumption to derive the following two implications:
+  - $\mathbb{E}[Y_i(1)|T_i=0] \geq \mathbb{E}[Y_i(0)|T_i=0] = \mathbb{E}[Y_i|T_i=0]$.
+  - $-\mathbb{E}[Y_i(0)|T_i=1] \geq -\mathbb{E}[Y_i(1)|T_i=1] = -\mathbb{E}[Y_i|T_i=1]$.
+:::
+
+
+::: {.fragment}
+- Use the two implications to replace the counterfactuals in the *`observational`-<span style="color: #FF7E15;">counterfactual</span> decomposition* to derive a lower bound of the ATE:
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+& \geq p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]} \\
+&= 0
+\end{align*}
+$$
+:::
+
+
+::: {.fragment}
+- Can be combined with **no-assumption upper bound** to get a tighter interval, but it still always contains 0.
+:::
+
+
+
+## Monotone Treatment Selection (MTS) Bounds {.smaller}
+
+- Assume **positive self-selection**: those who generally have better outcomes self-select into treatment:
+  - $\mathbb{E}[Y_i(1)|T_i=1] \geq \mathbb{E}[Y_i(1)|T_i=0]$.
+  - $\mathbb{E}[Y_i(0)|T_i=1] \geq \mathbb{E}[Y_i(0)|T_i=0]$.
+  - Upper bound of ATE is the associational difference: $\mathbb{E}[Y_i(1) - Y_i(0)] \leq \mathbb{E}[Y_i|T_i=1] - \mathbb{E}[Y_i|T_i=0]$.
+  - Why?
+
+::: {.fragment}
+- Let's use again the *`observational`-<span style="color: #FF7E15;">counterfactual</span> decomposition* of the ATE and replace:
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&\leq p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=1]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=0]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} - p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&= \color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} - \color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+\end{align*}
+$$
+:::
+
+::: {.fragment}
+
+- Can be combined with **MTR lower bound** to get a tighter interval, but it still always contains 0.
+
+:::
+
+
+
+## Optimal Treatment Selection (OTS) Bounds 1 {.smaller}
+
+- Assume individuals always receive the treatment that is best for them:
+  - $T_i = 0 \implies Y_i(0) > Y_i(1) \quad$ and $\quad T_i = 1 \implies Y_i(1) \geq Y_i(0)$.
+
+::: {.fragment}
+
+- From the assumption, we know:
+  - $\mathbb{E}[Y_i(1)|T_i=0] \leq \mathbb{E}[Y_i(0)|T_i=0] = \mathbb{E}[Y_i|T_i=0]  \quad$ and $\quad \mathbb{E}[Y_i(0)|T_i=1] \leq \mathbb{E}[Y_i(1)|T_i=1] = \mathbb{E}[Y_i|T_i=1]$.
+
+:::
+
+::: {.fragment}
+
+- Therefore, we can derive an **upper bound** for the ATE (together with no-assumption lower bound):
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&\leq p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]} - p\color{#00C1D4}{y^{LB}} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} - p\color{#00C1D4}{y^{LB}}\\
+\end{align*}
+$$
+
+
+
+
+
+:::
+
+
+::: {.fragment}
+
+- And a **lower bound** for the ATE (together with no-assumption lower bound):
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&\geq p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{y^{LB}} - p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&= (1-p)\color{#00C1D4}{y^{LB}} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+\end{align*}
+$$
+
+:::
+
+
+::: {.fragment}
+
+- Interval still always includes 0 and has length: $p\mathbb{E}[Y_i|T_i=1] + (1 - p)\mathbb{E}[Y_i|T_i=0]  - y^{LB}$.
+
+
+:::
+
+
+## Optimal Treatment Selection (OTS) Bounds 2 {.smaller}
+
+- Assume individuals always receive the treatment that is best for them, but add counterpositive:
+  - $T_i = 0 \implies Y_i(0) > Y_i(1) \quad$ Counterpositive: $T_i = 1 \impliedby Y_i(0) \leq Y_i(1)$.
+  - $T_i = 1 \implies Y_i(1) \geq Y_i(0) \quad$ Counterpositive: $T_i = 0 \impliedby Y_i(1) < Y_i(0)$.
+  
+::: {.fragment}
+
+- From the above, we can derive two implications:
+  - $\mathbb{E}[Y_i(1)|T_i=0] = \mathbb{E}[Y_i(1)|Y_i(0) > Y_i(1)] \color{#00C1D4}{\leq} \mathbb{E}[Y_i(1)|Y_i(0) \leq Y_i(1)] = \mathbb{E}[Y_i(1)|T_i=1] = \mathbb{E}[Y_i|T_i=1]$
+  - $\mathbb{E}[Y_i(0)|T_i=1] = \mathbb{E}[Y_i(0)|Y_i(1) \geq Y_i(0)] \color{#00C1D4}{<} \mathbb{E}[Y_i(0)|Y_i(1) < Y_i(0)] = \mathbb{E}[Y_i(0)|T_i=0] = \mathbb{E}[Y_i|T_i=0]$
+
+:::
+
+
+::: {.fragment}
+
+- Therefore, we can derive an **upper and lower bound** for the ATE:
+
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#FF7E15}{\mathbb{E}[Y_i(1)|T_i=0]} - p\color{#FF7E15}{\mathbb{E}[Y_i(0)|T_i=1]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&\leq p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} - p\color{#00C1D4}{y^{LB}} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&= \color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} - p\color{#00C1D4}{y^{LB}} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+\end{align*}
+$$
+$$
+\begin{align*}
+\mathbb{E}[Y_i(1) - Y_i(0)] &\geq p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{y^{LB}} - p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]} - (1-p)\color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+&= p\color{#00C1D4}{\mathbb{E}[Y_i|T_i=1]} + (1-p)\color{#00C1D4}{y^{LB}} - \color{#00C1D4}{\mathbb{E}[Y_i|T_i=0]}\\
+\end{align*}
+$$
+
+:::
+
+::: {.fragment}
+
+- Interval can, but doesn't have to include 0, finally. Length: $(1-p)\mathbb{E}[Y_i|T_i=1] + p\mathbb{E}[Y_i|T_i=0]  - y^{LB}$.
+
+:::
+
+
+## Partial Identification and Bounds: Example {.smaller}
+
+- Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(hdm) # for the data
+library(drgee) # for doubly robust estimator
+data(pension) # Get data
+Y = pension$net_tfa # Outcome
+T = pension$p401 # Treatment
+X = cbind(pension$age,pension$db,pension$educ,pension$fsize,pension$hown,
+          pension$inc,pension$male,pension$marr,pension$pira,pension$twoearn) # covariates 
+dr = drgee(oformula = formula(Y ~ X), eformula = formula(T ~ X), elink="logit") # DR reg
+ATE <- as.numeric(dr$coefficients) # ATE           
+p = mean(T) # Propensity score
+ymin = as.numeric(quantile(Y, probs = 0.05)) # outcome lower bound
+ymax = as.numeric(quantile(Y, probs = 0.95)) # outcome upper bound
+Y1 = mean(Y[T == 1]) # outcome mean for treated
+Y0 = mean(Y[T == 0]) # outcome mean for untreated
+
+# No assumption (worst case) bounds
+UB = p*Y1 + (1-p)*ymax-p*ymin-(1-p)*Y0
+LB = p*Y1 + (1-p)*ymin-p*ymax-(1-p)*Y0
+L = UB - LB
+cat(sprintf("LowerBound (worst) = %d, ATE = %d, UpperBound (worst) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+# Monotone Treatment Response (MTR) Bounds
+UB = p*Y1 + (1-p)*ymax-p*ymin-(1-p)*Y0
+LB = 0
+L = UB - LB
+cat(sprintf("LowerBound (MTR) = %d, ATE = %d, UpperBound (worst) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+```
+
+
+
+
+
+:::
+
+
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+
+
+# Monotone Treatment Selection (MTS) Bounds
+UB = Y1 - Y0
+L = UB - LB
+cat(sprintf("LowerBound (MTR) = %d, ATE = %d, UpperBound (MTS) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+# Optimal Treatment Selection 1 (OTS 1) Bounds
+UB = p*Y1 - p*ymin
+LB = (1-p)*ymin - (1-p)*Y0
+L = UB - LB
+cat(sprintf("LowerBound (OTS 1) = %d, ATE = %d, UpperBound (OTS 1) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+# Optimal Treatment Selection 2 (OTS 2) Bounds
+UB = Y1 - p*ymin - (1-p)*Y0
+LB = p*Y1 + (1-p)*ymin - Y0
+L = UB - LB
+cat(sprintf("LowerBound (OTS 2) = %d, ATE = %d, UpperBound (OTS 2) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+# Mix OTS1 (Upper) and OTS 2 (Lower) Bounds
+UB = p*Y1 - p*ymin
+LB = p*Y1 + (1-p)*ymin - Y0
+L = UB - LB
+cat(sprintf("LowerBound (OTS 2) = %d, ATE = %d, UpperBound (OTS 1) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+```
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+library(hdm) # for the data
+library(drgee) # for doubly robust estimator
+# Get data
+data(pension)
+
+Y = pension$net_tfa # Outcome
+T = pension$p401 # Treatment
+X = cbind(pension$age,pension$db,pension$educ,pension$fsize,pension$hown,
+          pension$inc,pension$male,pension$marr,pension$pira,pension$twoearn) # covariates 
+
+dr = drgee(oformula = formula(Y ~ X), eformula = formula(T ~ X), elink="logit") # DR reg
+ATE <- as.numeric(dr$coefficients) # ATE           
+
+p = mean(T) # Propensity score
+ymin = as.numeric(quantile(Y, probs = 0.05)) # outcome lower bound
+ymax = as.numeric(quantile(Y, probs = 0.95)) # outcome upper bound
+Y1 = mean(Y[T == 1]) # outcome mean for treated
+Y0 = mean(Y[T == 0]) # outcome mean for untreated
+
+# No assumption (worst case) bounds
+UB = p*Y1 + (1-p)*ymax-p*ymin-(1-p)*Y0
+LB = p*Y1 + (1-p)*ymin-p*ymax-(1-p)*Y0
+L = UB - LB
+
+cat(sprintf("LowerBound (worst) = %d, ATE = %d, UpperBound (worst) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+
+# Monotone Treatment Response (MTR) Bounds
+UB = p*Y1 + (1-p)*ymax-p*ymin-(1-p)*Y0
+LB = 0
+L = UB - LB
+
+cat(sprintf("LowerBound (MTR) = %d, ATE = %d, UpperBound (worst) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+
+# Monotone Treatment Selection (MTS) Bounds
+UB = Y1 - Y0
+L = UB - LB
+
+cat(sprintf("LowerBound (MTR) = %d, ATE = %d, UpperBound (MTS) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+
+# Optimal Treatment Selection 1 (OTS 1) Bounds
+UB = p*Y1 - p*ymin
+LB = (1-p)*ymin - (1-p)*Y0
+L = UB - LB
+
+cat(sprintf("LowerBound (OTS 1) = %d, ATE = %d, UpperBound (OTS 1) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+
+
+# Optimal Treatment Selection 2 (OTS 2) Bounds
+UB = Y1 - p*ymin - (1-p)*Y0
+LB = p*Y1 + (1-p)*ymin - Y0
+L = UB - LB
+
+cat(sprintf("LowerBound (OTS 2) = %d, ATE = %d, UpperBound (OTS 2) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+
+# Mix OTS1 (Upper) and OTS 2 (Lower) Bounds
+UB = p*Y1 - p*ymin
+LB = p*Y1 + (1-p)*ymin - Y0
+L = UB - LB
+
+cat(sprintf("LowerBound (OTS 2) = %d, ATE = %d, UpperBound (OTS 1) = %d, IntervalLength = %d", round(LB), round(ATE), round(UB), round(L)))
+
+
+
+
+```
+
+:::
+
+
+:::
+
+
+# Sensitivity Analysis {data-stack-name="Sensitivity Analysis"}
+
+## Linear Model & Single Confounder {.smaller}
+
+
+- $Y_i$ as linear function of $T_i$, observed confounding variables $\mathbf{X_i}$ and a single unobserved confounding variables $U_i$:
+  - $Y_i = \tau T_i + \mathbf{\beta' X_i} + \gamma U_i + \epsilon_{Y_i}$ and assume that $Cov(\epsilon_{Y_i},T_i) = 0$
+- Since $U_i$ is unobserved, we have to estimate this model:
+  - $Y_i = \tilde{\tau}T_i + \mathbf{\tilde{\beta}' X_i} + \tilde{\epsilon}_{Y_i}$
+
+::: {.fragment}
+- How does the estimable treatment effect $\tilde{\tau}$ differ from the true treatment effect $\tau$?
+- To find out, let's apply the `Frisch-Waugh-Lovell theorem` to the above models to *partial out* the observed covariates $\mathbf{X_i}$:
+  - $(Y_i - \mathbb{E}(Y_i|\mathbf{X_i}) = \tau(T_i - \mathbb{E}(T_i|\mathbf{X_i})) + \gamma(U_i - \mathbb{E}(U_i|\mathbf{X_i})) + \epsilon_{Y_i}$
+  - $(Y_i - \mathbb{E}(Y_i|\mathbf{X_i}) = \tilde{\tau}(T_i - \mathbb{E}(T_i|\mathbf{X_i})) + \tilde{\epsilon}_{Y_i}$
+  
+:::
+
+
+::: {.fragment}
+- Obtain $\tilde{\tau}$ and replace $(Y_i - \mathbb{E}(Y_i|\mathbf{X_i})$: 
+
+$$
+\begin{align*}
+\tilde{\tau} &= \frac{Cov((Y_i - \mathbb{E}(Y_i|\mathbf{X_i}), (T_i - \mathbb{E}(T_i|\mathbf{X_i})))}{Var((T_i - \mathbb{E}(T_i|\mathbf{X_i})))} = \frac{Cov((\tau(T_i - \mathbb{E}(T_i|\mathbf{X_i})) + \gamma(U_i - \mathbb{E}(U_i|\mathbf{X_i})) + \epsilon_{Y_i}), (T_i - \mathbb{E}(T_i|\mathbf{X_i})))}{Var((T_i - \mathbb{E}(T_i|\mathbf{X_i})))} \\
+&= \tau \underbrace{\frac{ Cov((T_i - \mathbb{E}(T_i|\mathbf{X_i})),(T_i - \mathbb{E}(T_i|\mathbf{X_i})))}{Var((T_i - \mathbb{E}(T_i|\mathbf{X_i})))}}_{=1} + \gamma \underbrace{\frac{ Cov((U_i - \mathbb{E}(U_i|\mathbf{X_i})),(T_i - \mathbb{E}(T_i|\mathbf{X_i})))}{Var((T_i - \mathbb{E}(T_i|\mathbf{X_i})))}}_{:=\delta} + \underbrace{\frac{ Cov(\epsilon_{Y_i},(T_i - \mathbb{E}(T_i|\mathbf{X_i})))}{Var((T_i - \mathbb{E}(T_i|\mathbf{X_i})))}}_{=0}= \tau + \color{#FF7E15}{\underbrace{\gamma \delta}_{\text{Bias}}}
+\end{align*}
+$$
+  
+:::
+
+
+
+
+## Ommitted Confounder Bias - Interpretation
+
+
+- $\gamma$ is the `impact` of the unobserved confounder $U_i$ on the outcome $Y_i$.
+- $\delta$ is the impact of the treatment $T_i$ on the unobserved confounder $U_i$ while controlling for the observed coundounder $\mathbf{X_i}$.
+  - $\delta$ can be interpreted as `imbalance` in the unobserved confounder $U_i$ across values of $T_i$.
+  
+::: {.fragment}
+- Overall bias results from an unobserved confounder's `impact on the outcome times its imbalance across treatment levels`.
+- `Question`: How strong does the bias of an unobserved confounder have to be to invalidate the treatment effect estimate?
+
+:::
+
+::: {.fragment}
+- Answers to this question can be visualized by a `contour plot` of the bias $\gamma \delta$ as a function of $\gamma$ and $\delta$.
+
+:::
+
+
+
+## Ommitted Confounder Bias - Contour Plot
+
+
+::: {.columns}
+
+
+::: {.column width="40%"}
+
+
+- `Hypothetical example`: estimated treatment effect unadjusted for the unobserved confounder $\tilde{\tau} = 25$.
+  
+- Levels of bias (contours) diminish the estimated $\tilde{\tau}$ implying different levels of $\tau$.
+  
+- Benchmark covariates $X_b$ for comparison.
+
+
+:::
+
+
+::: {.column width="60%"}
+
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: "center"
+#| fig-width: 6
+#| fig-height: 6
+
+library(ggplot2)
+
+# Generate x values
+x_values <- seq(0.0000001, 5, length.out = 100)  # Avoid zero to prevent division by zero
+
+# Calculate y values for each function
+y1 <- 5 / x_values
+y2 <- 20 / x_values
+y3 <- 50 / x_values
+y4 <- 90 / x_values
+y5 <- 130 / x_values
+
+# Combine into a data frame
+data <- data.frame(
+  x = c(x_values, x_values, x_values, x_values, x_values),
+  y = c(y1, y2, y3, y4, y5),
+  f = factor(rep(c(20, 15, 8, 0, -5), each = length(x_values)))
+)
+
+# Create the plot
+plot <- ggplot(data, aes(x = x, y = y, color = f, group = f)) +
+  geom_line() +
+  labs(x = expression(delta), y = expression(gamma)) +
+  geom_point(aes(x = 0, y = 0), colour = "#005e73", size = 2, shape = 17) +
+  geom_text(x = 0, y = 0, label = expression(phantom(0) * widehat(tau) == 25), parse = TRUE, vjust = -0.5, hjust = 0, color = "#005e73") + # Annotation for the tau
+  geom_point(aes(x = 0.7, y = 50), colour = "#005e73", size = 2, shape = 16) +
+  geom_text(x = 0.7, y = 50, label = expression(X[b]), parse = TRUE, vjust = -0.5, hjust = 0, color = "#005e73") + # Annotation for the x_b
+  geom_text(x = 1, y = 5, label = "tau == 20", parse = TRUE, vjust = -0.5, hjust = 0, color = "#005e73") + # Annotate each curve
+  geom_text(x = 2, y = 10, label = "tau == 15", parse = TRUE, vjust = -0.5, hjust = 0, color = "#005e73") + # Annotate each curve
+  geom_text(x = 3, y = 17, label = "tau == 8", parse = TRUE, vjust = -0.5, hjust = 0, color = "#005e73") + # Annotate each curve
+  geom_text(x = 4, y = 23, label = "tau == 0", parse = TRUE, vjust = -0.5, hjust = 0, color = "#FF7E15") + # Annotate each curve
+  geom_text(x = 4.8, y = 27, label = "tau == -5", parse = TRUE, vjust = -0.5, hjust = 0, color = "#00C1D4") + # Annotate each curve
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_manual(values = c("20" = "#005e73", "15" = "#005e73", "8" = "#005e73", "0" = "#FF7E15", "-5" = "#00C1D4")) +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove the legend
+
+# Print the plot
+print(plot)
+```
+
+
+:::
+
+:::
+
+
+## Recent Extensions to More General Settings {.smaller}
+
+(1) [Cinelli & Hazlett (2020)](https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssb.12348):
+  - **Approach**: 
+    - Reparameterize the bias terms with `scale-free` partial $R^2$ measures:
+      - $\gamma$: $R^2$ to assess the strength of association between $\mathbf{U_i}$ and $Y_i$ while controlling for $\mathbf{X_i}$.
+      - $\delta$: $R^2$ to assess the strength of association between $\mathbf{U_i}$ and $T_i$ while controlling for $\mathbf{X_i}$.
+
+    - Derive two new sensitivity measures: 
+      - `Robustness Value (RV)`: minimum strength of association that $\mathbf{U_i}$ must have with both $T_i$ and $Y_i$ to explain away the estimated $\tilde{\tau}$.
+      - $\color{#00C1D4}{R^2_{Y \sim T|\mathbf{X}}}$: an **extreme** confounder $U^E_i$ that explains 100% of the residual variance of $Y_i$ (=> $R^2_{Y \sim U^E|T\mathbf{X}} = 1$), must explain at least as much as $R^2_{T \sim U^E|\mathbf{X}} = R^2_{Y \sim T|\mathbf{X}}$ of the residual variance of $T_i$  to fully explain away the estimated $\tilde{\tau}$.
+
+::: {.fragment}
+
+  - **Key Advantages**:
+  
+    - `No assumptions on functional form` of the treatment mechanism or the distribution of unobserved confounders.
+    
+    - Handles `multiple confounders` that may interact with the treatment and outcome in non-linear ways.
+    
+    - Benchmark the strength of confounders based on `comparisons with observed covariates`.
+  
+  - **Implementation:** [R package "sensemakr"](https://cran.r-project.org/web/packages/sensemakr/index.html).
+
+:::
+
+
+## Recent Extensions to More General Settings
+
+(2) [Chernozhukov, Cinelli, et al. (2021-2024)](https://arxiv.org/abs/2112.133988):
+  - **Approach**: 
+    - Using `Riesz representers` to derive influence functions for causal parameters in non-parametric settings. 
+  
+  - **Key Advantages**:
+    - Applicable in general nonparametric models without stringent assumptions about functional forms or distributions.
+    - `Both treatment mechanism and outcome mechanism can be modeled with arbitrary machine learning models`.
+    - Extends to a broad range of causal parameters (also from AIPW, IV, DiD models).
+  
+  - **Implementation:** [R package "dml.sensemakr"](https://github.com/carloscinelli/dml.sensemakr).
+
+
+
+## Sensitivity Analysis: Example {.smaller}
+
+
+- Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: true
+#| eval: true
+
+library(hdm) # for the data
+library(sensemakr) # load sensemakr package
+data(pension) # Get data
+
+# runs conditional outcome regression model
+model <- lm(net_tfa ~ p401 + age + db + educ + fsize + hown + inc + 
+            male + marr + pira + twoearn, data = pension)
+
+# runs sensemakr for sensitivity analysis
+sensitivity <- sensemakr(model = model, treatment = "p401",
+                         benchmark_covariates = c("inc"), kd=1:3)
+
+# plot 
+# plot(sensitivity)
+
+# short description of results
+sensitivity
+
+```
+
+
+
+
+
+:::
+
+
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig-align: "center"
+#| fig-width: 6
+#| fig-height: 6
+
+
+library(hdm) # for the data
+library(sensemakr) # load sensemakr package
+data(pension) # Get data
+
+# runs regression model
+model <- lm(net_tfa ~ p401 + age + db + educ + fsize + hown + inc + 
+            male + marr + pira + twoearn, data = pension)
+
+# runs sensemakr for sensitivity analysis
+sensitivity <- sensemakr(model = model, treatment = "p401",
+                         benchmark_covariates = c("inc"), kd=1:3)
+
+# plot 
+plot(sensitivity)
+
+
+
+
+
+
+```
+
+:::
+
+
+:::
+
+
+
+# Instrumental Variables {data-stack-name="IVs"}
+
+## What is an Instrumental Variable? {.smaller}
+
+
+::: {.columns}
+
+
+::: {.column width="40%"}
+
+
+
+```{r, engine = 'tikz'}
+#| echo: false
+\definecolor{tuhh_blue}{HTML}{00C1D4}
+\definecolor{tuhh_orange}{HTML}{FF7E15}
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {T};
+  \node[circle,draw,minimum size=1cm] (X2) at (0,2) {Z};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[circle,draw,minimum size=1cm] (X4) at (4,2) {U};
+
+  % Solid edges
+  \draw[->, thick, tuhh_blue] (X2) -- node[left] {1} (X1);
+  \draw[->, thick, tuhh_orange] (X2) -- node[above] {2} (X3);
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, dashed, thick, tuhh_orange] (X4) -- node[above] {3} (X2);
+  \draw[->, dashed, thick] (X4) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X1);
+
+\end{tikzpicture}
+```
+
+:::
+
+::: {.column width="60%"}
+
+- `Assumptions:`
+  1. **Relevance**: $Z$ is significantly correlated with $T$, i.e. $Cov(Z, T) \neq 0$. <br> <span style="color:#00C1D4">Path 1</span> must exist.
+  2. **Exclusion Restriction**: $Z$ affects $Y$ only through $T$. <br> A direct <span style="color:#FF7E15">path 2</span> must **not** exist.
+  3. **Unconfoundedness** (Exogeneity, Validity): $Z$ is independent of $U$, i.e. $Cov(Z, \epsilon_Y) = 0$. <br> Conditioning on $\mathbf{X}$ required in some contexts (will cover this later). <br> <span style="color:#FF7E15">Path 3</span> must **not** exist.
+:::
+
+:::
+
+
+
+::: {.fragment}
+- Even with these assumptions fulfilled, there is **no nonparametric identification** of the ATE. 
+  - The backdoor path $T \leftarrow U \rightarrow Y$ cannot be blocked.
+- Two identification approaches:
+    (1) `Parametric assumption` (i.e. linearity):
+        - Identification of `homogeneous treatment effect`.
+    (2) No parametric, but `monotonicity assumption`:
+        - Nonparametric identification of `Local Average Treatment Effect (LATE)` instead of ATE.
+
+:::
+
+
+## Where do Good IVs come from? {.smaller}
+
+(1) `Lotteries` - purely random:
+    - By the researcher: randomized experiments with respect to the instrument not the treatment itself. 
+      - `Encouragement designs`: random assignment of invitations or incentives to participate in a program.
+    - Sometimes also institutionalized: e.g. draft lotteries in sport or military, school assignment, prize lotteries among customers as marketing device.
+    
+(2) `Natural Experiments` - as-good-as-random:
+    - Random conditional on some covariates, i.e. rely on a selection-on-observables for the IV instead of the treatment.
+    - Changes in policy, regulation or law applicable to defined subpopulation.
+    - Variation in decision makers, evaluators, judges.
+    - Economic shocks.
+    - Historical events.
+    - Changes in weather conditions.
+    - Variation in geographical distance.
+
+
+
+## Binary Linear Setting {.smaller}
+
+- **Additional Assumptions**:
+  - Binary $Z_i$ and $T_i$ and linear outcome model with exclusion restriction for $Z_i$: $Y_i = \beta_0 + \tau T_i + \beta_U U_i + \epsilon_i$. 
+
+::: {.fragment}
+- Let us derive the `Wald Estimand` for the treatment effect in this IV setting in the following steps: 
+    1. Start by the associational difference.
+    2. Use linearity of expectations and `instrumental unconfoundedness` assumption - rearrange.
+    3. Use `instrumental unconfoundedness` assumption again.
+
+
+$$
+\begin{align*}
+\mathbb{E}[Y_i | Z_i = 1] &- \mathbb{E}[Y_i | Z_i = 0] = \mathbb{E}[\beta_0 + \tau T_i + \beta_U U_i + \epsilon_i | Z_i = 1] - \mathbb{E}[\beta_0 + \tau T_i + \beta_U U_i + \epsilon_i | Z_i = 0] \\
+&= \beta_0 + \tau \mathbb{E}[T_i | Z_i = 1] + \beta_u \mathbb{E}[U_i | Z_i = 1] + \mathbb{E}[\epsilon_i | Z_i = 1] - \beta_0 - \tau \mathbb{E}[T_i | Z_i = 0] - \beta_u \mathbb{E}[U_i | Z_i = 0] - \mathbb{E}[\epsilon_i | Z_i = 0] \\
+&= \tau (\mathbb{E}[T_i | Z_i = 1] - \mathbb{E}[T_i | Z_i = 0]) + \beta_u (\mathbb{E}[U_i | Z_i = 1] - \mathbb{E}[U_i | Z_i = 0]) \\
+&= \tau (\mathbb{E}[T_i | Z_i = 1] - \mathbb{E}[T_i | Z_i = 0]) + \beta_u (\mathbb{E}[U_i] - \mathbb{E}[U_i]) = \tau (\mathbb{E}[T_i | Z_i = 1] - \mathbb{E}[T_i | Z_i = 0])
+\end{align*}
+$$
+:::
+
+::: {.fragment}
+
+::: {.columns}
+
+::: {.column width="35%"}
+
+
+- Solve for $\tau$ to get the `Wald Estimand`:
+
+$$
+\tau = \frac{\mathbb{E}[Y_i | Z_i = 1] - \mathbb{E}[Y_i | Z_i = 0]}{\mathbb{E}[T_i | Z_i = 1] - \mathbb{E}[T_i | Z_i = 0]}
+$$
+:::
+
+::: {.column width="35%"}
+
+- Sample version, i.e. `Wald Estimator`:
+
+$$
+\hat{\tau} = \frac{\sum_{i=1}^n Y_i \cdot Z_i - \sum_{i=1}^n Y_i \cdot (1 - Z_i)}{\sum_{i=1}^n T_i \cdot Z_i - \sum_{i=1}^n T_i \cdot (1 - Z_i)}
+$$
+
+:::
+
+::: {.column width="30%"}
+
+- `Relevance` assumption ensures that denominator is not zero.
+
+::: 
+
+::: 
+
+
+
+::: 
+
+
+## Continuous Linear Setting {.smaller}
+
+- **Additional Assumptions**:
+  - Continuous. $Z_i$ and $T_i$ and linear outcome model with `exclusion restriction` for $Z_i$: $Y_i = \beta_0 + \tau T_i + \beta_U U_i + \epsilon_i$. 
+  
+
+::: {.fragment}
+- Let us derive the `Wald Estimand` for the treatment effect in this IV setting in the following steps: 
+    1. Start with the classic covariance identity.
+    2. Use linearity of expectations and `instrumental unconfoundedness` - rearrange.
+    3. Use covariance identity and  `instrumental unconfoundedness` assumption again.
+    
+$$
+\begin{align*}
+Cov(Y_i, Z_i) &= \mathbb{E}[Y_i Z_i] - \mathbb{E}[Y_i] \mathbb{E}[Z_i] = \mathbb{E}[(\beta_0 + \tau T_i + \beta_U U_i + \epsilon_i) Z_i] - \mathbb{E}[\beta_0 + \tau T_i + \beta_U U_i + \epsilon_i] \mathbb{E}[Z_i] \\
+&= \beta_0\mathbb{E}[Z_i] + \tau\mathbb{E}[T_iZ_i] + \beta_U \mathbb{E}[U_iZ_i] + \mathbb{E}[\epsilon_iZ_i] - \beta_0\mathbb{E}[Z_i] - \tau\mathbb{E}[T_i]\mathbb{E}[Z_i] - \beta_U\mathbb{E}[U_i]\mathbb{E}[Z_i] - \mathbb{E}[\epsilon_i]\mathbb{E}[Z_i]\\
+&= \tau\mathbb{E}[T_iZ_i] + \beta_U \mathbb{E}[U_iZ_i] - \tau\mathbb{E}[T_i]\mathbb{E}[Z_i] - \beta_U\mathbb{E}[U_i]\mathbb{E}[Z_i] = \tau(\mathbb{E}[T_iZ_i] - \mathbb{E}[T_i]\mathbb{E}[Z_i]) + \beta_U (\mathbb{E}[U_iZ_i]  - \mathbb{E}[U_i]\mathbb{E}[Z_i])\\
+&= \tau Cov(T_i, Z_i) + \beta_U Cov(U_i, Z_i) = \tau Cov(T_i, Z_i)
+\end{align*}
+$$
+:::
+
+
+::: {.fragment}
+
+::: {.columns}
+
+::: {.column width="35%"}
+
+
+- Solve for $\tau$ to get the `Wald Estimand`:
+
+$$
+\tau = \frac{Cov(Y_i, Z_i)}{Cov(T_i, Z_i)}
+$$
+:::
+
+::: {.column width="35%"}
+
+- Sample version, i.e. `Wald Estimator`:
+
+$$
+\hat{\tau} = \frac{\sum_{i=1}^n Y_i \cdot Z_i - \bar{Y} \bar{Z}}{\sum_{i=1}^n T_i \cdot Z_i - \bar{T} \bar{Z}}
+$$
+
+
+:::
+
+::: {.column width="30%"}
+
+- `Relevance` assumption ensures that denominator is not zero.
+::: 
+
+::: 
+
+
+
+::: 
+
+
+## Two-Stage Least Squares Estimator (2SLS)
+
+1. `Stage`: Linearly regress $T_i$ on $Z_i$ to estimate $\mathbb{E}[T_i|Z_i]$. This gives the projection of $T_i$ onto $Z_i$: $\hat{T}_i$.
+          
+2. `Stage`: Linearly regress $Y_i$ on $\hat{T}_i$ to estimate $\mathbb{E}[Y_i|\hat{T}_i]$. Obtain the estimate $\hat{\tau}$ as the fitted coefficient of $\hat{T}_i$.
+       
+          
+::: {.columns}
+
+::: {.column width="50%"}
+
+```{r, engine = 'tikz'}
+#| echo: false
+#| fig-align: "center"
+#| fig-width: 5
+#| fig-height: 5
+
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {T};
+  \node[circle,draw,minimum size=1cm] (X2) at (0,2) {Z};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[circle,draw,minimum size=1cm] (X4) at (4,2) {U};
+
+  % Solid edges
+  \draw[->, thick] (X2) -- (X1);
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X1);
+
+\end{tikzpicture}
+```
+
+
+:::
+
+
+::: {.column width="50%"}
+
+```{r, engine = 'tikz'}
+#| echo: false
+#| fig-align: "center"
+#| fig-width: 5
+#| fig-height: 5
+
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {$\hat{T}$};
+  \node[circle,draw,minimum size=1cm] (X2) at (0,2) {Z};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[circle,draw,minimum size=1cm] (X4) at (4,2) {U};
+
+  % Solid edges
+  \draw[->, thick] (X2) -- (X1);
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X3);
+
+\end{tikzpicture}
+```
+
+:::
+
+:::
+
+
+          
+- Also works as an estimator in the binary setting.
+
+
+
+# Local Average Treatment Effect {data-stack-name="LATE"}
+
+## Stratification of Data {.smaller}
+
+
+- Define potential treatments conditional on $Z_i$: $T_i(0)$ if $Z_i = 0$ and $T_i(1)$ if $Z_i = 1$.
+
+
+::: {.fragment}
+
+- Principal strata:
+  - `Compliers` always take the treatment that they’re encouraged to take: $T_i(1) = 1$ and $T_i(0) = 0$.
+  - `Always-Takers` always take the treatment, regardless of encouragement: $T_i(1) = 1$ and $T_i(0) = 1$.
+  - `Never-Takers` never take the treatment, regardless of encouragement: $T_i(1) = 0$ and $T_i(0) = 0$.
+  - `Defiers` always take the opposite treatment that they’re encouraged to take: $T_i(1) = 0$ and $T_i(0) = 1$.
+
+:::
+
+
+::: {.fragment}
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- Causal graph for compliers and defiers:
+
+
+```{r, engine = 'tikz'}
+#| echo: false
+#| fig-align: "center"
+#| fig-width: 3
+#| fig-height: 3
+
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {T};
+  \node[circle,draw,minimum size=1cm] (X2) at (0,2) {Z};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[circle,draw,minimum size=1cm] (X4) at (4,2) {U};
+
+  % Solid edges
+  \draw[->, thick] (X2) -- (X1);
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X1);
+
+\end{tikzpicture}
+```
+
+
+:::
+
+
+::: {.column width="50%"}
+
+- Causal graph for always-takers and never-takers:
+
+```{r, engine = 'tikz'}
+#| echo: false
+#| fig-align: "center"
+#| fig-width: 3
+#| fig-height: 3
+
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {T};
+  \node[circle,draw,minimum size=1cm] (X2) at (0,2) {Z};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[circle,draw,minimum size=1cm] (X4) at (4,2) {U};
+
+  % Solid edges
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X1);
+
+\end{tikzpicture}
+```
+
+:::
+
+:::
+
+:::
+
+::: {.fragment}
+
+- But can’t identify what strata a given unit is in: e.g. $Z_i = 0$ & $T_i = 0$ could be compliers or never-takers; etc.
+
+:::
+
+
+
+## LATE: Definition & Identification {.smaller}
+
+- Instead of nonparametrically identifying the ATE, it is only possible to nonparametrically identify the LATE: 
+
+
+::: {.callout-note icon=false}
+
+## Definition: "Local Average Treatment Effect (LATE) / Complier Average Causal Effect (CACE)"
+
+$\mathbb{E}[Y_i(T_i=1) - Y_i(T_i=0) | T_i(Z_i=1) = 1, T_i(Z_i=0) = 0]$
+
+:::
+
+- Instead of the linearity assumption, we need the monotonicity assumption:
+
+::: {.callout-note icon=false}
+
+## Assumption: "Monotonicity"
+
+$\forall i, T_i(Z_i=1) \geq T_i(Z_i=0)$
+
+:::
+
+- Monotonicity implies that there are no defiers in the population.
+
+::: {.callout-note icon=false}
+
+## Theorem: "LATE Nonparametric Identification"
+
+- Given that $Z_i$ is an instrument, $Z_i$ and $T_i$ are binary variables, and that monotonicity holds, the following is true:
+
+$\mathbb{E}[Y_i(1) - Y_i(0) | T_i(1) = 1, T_i(0) = 0] = \frac{\mathbb{E}[Y_i | Z_i = 1] - \mathbb{E}[Y_i | Z_i = 0]}{\mathbb{E}[T_i | Z_i = 1] - \mathbb{E}[T_i | Z_i = 0]}$
+
+:::
+
+- Numerator is 2nd-stage `Intention-to-Treat (ITT) Effect`; denominator is 1st-stage effect or `Complier Share`.
+
+
+## LATE: Proof 1 {.smaller}
+
+- Start with causal effect of $Z_i$ on $Y_i$ and decompose it into weighted stratum-specific causal effects:
+
+$$
+\begin{align*}
+\mathbb{E}[Y_i(Z_i=1) - Y_i(Z_i=0)] &= \mathbb{E}[Y_1(Z_i = 1) - Y_i(Z_i = 0) \mid T_i(1) = 1, T_i(0) = 0]P(T_i(1) = 1, T_i(0) = 0) \quad \text{(compliers)} \\
+&+ \mathbb{E}[Y_1(Z_i = 1) - Y_i(Z_i = 0) \mid T_i(1) = 0, T_i(0) = 1]P(T_i(1) = 0, T_i(0) = 1) \quad \text{(defiers)}\\
+&+ \mathbb{E}[Y_1(Z_i = 1) - Y_i(Z_i = 0) \mid T_i(1) = 1, T_i(0) = 1]P(T_i(1) = 1, T_i(0) = 1) \quad \text{(always-takers)}\\
+&+ \mathbb{E}[Y_1(Z_i = 1) - Y_i(Z_i = 0) \mid T_i(1) = 0, T_i(0) = 0]P(T_i(1) = 0, T_i(0) = 0) \quad \text{(never-takers)}\\
+\end{align*}
+$$
+
+- Solve for the effect of $Z_i$ on $Y_i$ among compliers:
+
+
+$$
+\begin{align*}
+\mathbb{E}[Y_1(Z_i = 1) - Y_i(Z_i = 0) \mid T_i(1) = 1, T_i(0) = 0] = \frac{\mathbb{E}[Y_i(Z_i=1) - Y_i(Z_i=0)]}{P(T_i(1) = 1, T_i(0) = 0)}
+\end{align*}
+$$
+
+- Compliers always take the treatment they are encouraged to (replace Z for T) and apply instrumental unconfoundedness assumption to identify the numerator:
+
+
+$$
+\begin{align*}
+\mathbb{E}[Y_1(T_i = 1) - Y_i(T_i = 0) \mid T_i(1) = 1, T_i(0) = 0] = \frac{\mathbb{E}[Y_i(Z_i=1) - Y_i(Z_i=0)]}{P(T_i(1) = 1, T_i(0) = 0)} = \frac{\mathbb{E}[Y_i|Z_i=1] - \mathbb{E}[Y_i|Z_i=0)]}{P(T_i(1) = 1, T_i(0) = 0)}
+\end{align*}
+$$
+
+
+
+## LATE: Proof 2 {.smaller}
+
+- To identify the denominator (pobability of being a complier), take everyone (probability 1) and subtract always-takers and never-takers, since there are no defiers, due to monotonicity:
+
+$$
+\begin{align*}
+\mathbb{E}[Y_1(T_i = 1) - Y_i(T_i = 0) \mid T_i(1) = 1, T_i(0) = 0] &= \frac{\mathbb{E}[Y_i|Z_i=1] - \mathbb{E}[Y_i|Z_i=0)]}{P(T_i(1) = 1, T_i(0) = 0)} \\
+&= \frac{\mathbb{E}[Y_i|Z_i=1] - \mathbb{E}[Y_i|Z_i=0)]}{1 - P(T_i = 0 | Z_i = 1) - P(T_i = 1 | Z_i = 0)} \\
+\end{align*}
+$$
+
+
+$$
+\begin{align*}
+\mathbb{E}[Y_1(T_i = 1) - Y_i(T_i = 0) \mid T_i(1) = 1, T_i(0) = 0] &= \frac{\mathbb{E}[Y_i|Z_i=1] - \mathbb{E}[Y_i|Z_i=0)]}{1 - (1 - P(T_i = 1 | Z_i = 1)) - P(T_i = 1 | Z_i = 0)} \\
+&= \frac{\mathbb{E}[Y_i|Z_i=1] - \mathbb{E}[Y_i|Z_i=0)]}{P(T_i = 1 | Z_i = 1) - P(T_i = 1 | Z_i = 0)} \\
+\end{align*}
+$$
+
+- Finally, because $T_i$ is a binary variable, we can swap probabilities of $T_i = 1$ for expectations:
+
+$$
+\begin{align*}
+\mathbb{E}[Y_1(T_i = 1) - Y_i(T_i = 0) \mid T_i(1) = 1, T_i(0) = 0] = \frac{\mathbb{E}[Y_i|Z_i=1] - \mathbb{E}[Y_i|Z_i=0)]}{\mathbb{E}[T_i | Z_i = 1] - \mathbb{E}[T_i | Z_i = 0)]} \\
+\end{align*}
+$$
+
+
+
+## IV Estimation: Example {.smaller}
+
+- Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: true
+#| eval: true
+
+library(hdm) # for the data
+data(pension) # Get data
+Y = pension$net_tfa # Outcome
+Z = pension$e401 # Instrument
+T = pension$p401 # Treatment
+ITT=mean(Y[Z==1])-mean(Y[Z==0])   # estimate intention-to-treat effect (ITT)
+first=mean(T[Z==1])-mean(T[Z==0]) # estimate first stage effect (complier share)
+LATE=ITT/first                    # compute LATE
+ITT; first; LATE                  # show ITT, first stage effect, and LATE
+
+```
+
+
+
+
+
+:::
+
+
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: true
+#| fig-align: "center"
+#| fig-width: 8
+#| fig-height: 8
+
+
+library(hdm) # for the data
+library(AER) # load AER package for ivreg (2SLS)
+data(pension) # Get data
+Y = pension$net_tfa # Outcome
+Z = pension$e401 # Instrument
+T = pension$p401 # Treatment
+
+LATE=ivreg(Y~T|Z)                 # run two stage least squares regression
+summary(LATE,vcov = vcovHC)       # results with heteroscedasticity-robust se
+
+```
+
+:::
+
+
+:::
+
+
+
+# Instrumental Variable Estimation with Double Machine Learning  {data-stack-name="IV-DML"}
+
+## Motivation: Control for Covariates
+
+- In many applications, it may not be credible that IV assumptions like random assignment hold unconditionally, i.e. without controlling for observed covariates.   
+  - Natural experiments vs. purely randomized encouragement design.
+  - Problematic if covariates are confounders between instrument and outcome.
+  - E.g. geographic proximity to college as IV when assessing the effect of eductaion (treatment) on earnings (outcome). Pros & cons of this IV?
+- 2SLS can be extended, but the linear specification for covariates has to be correct.
+
+```{r, engine = 'tikz'}
+#| echo: false
+#| fig-align: "center"
+#| fig-width: 4
+#| fig-height: 4
+
+\begin{tikzpicture}[scale=1]
+
+  % Nodes
+  \node[circle,draw,minimum size=1cm] (X1) at (0,0) {T};
+  \node[circle,draw,minimum size=1cm] (X2) at (0,2) {Z};
+  \node[circle,draw,minimum size=1cm] (X3) at (4,0) {Y};
+  \node[circle,draw,minimum size=1cm] (X4) at (4,2) {U};
+  \node[circle,draw,minimum size=1cm] (X5) at (2,2) {X};
+
+  % Solid edges
+  \draw[->, thick] (X2) -- (X1);
+  \draw[->, thick] (X1) -- (X3);
+  \draw[->, thick] (X5) -- (X2);
+  \draw[->, thick] (X5) -- (X1);
+  \draw[->, thick] (X5) -- (X3);
+  \draw[<->, dashed, thick] (X5) -- (X4);
+  \draw[->, dashed, thick] (X4) -- (X3);
+  \draw[->, dashed, thick] (X4) -- (X1);
+
+\end{tikzpicture}
+```
+
+
+
+## Partially Linear IV Model {.smaller}
+
+- $T_i$ is additively separable and we require `conditional unconfoundedness` of the instrument $Z_i$:
+$$\begin{align}\begin{aligned}Y_i = \tau T_i + g(\mathbf{X_i}) + \epsilon_{Y_i}, & &\mathbb{E}(\epsilon_{Y_i} | Z_i,\mathbf{X_i}) = 0 \\Z_i = h(\mathbf{X_i}) + \epsilon_{Z_i}, & &\mathbb{E}(\epsilon_{Z_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}$$
+<br>
+
+- [Robinson (1988)](https://journals.sagepub.com/doi/10.1177/00491241221099552)-style/ `partialling-out` version of the `Wald estimand`:
+  - $\tau$ is identified by using residuals of the predicted instrument as instrument for the residual-on-residual regression:
+
+$$\tau = \frac{\mathbb{E}[(Y_i - \mu(\mathbf{X_i})) (Z_i - h(\mathbf{X_i}))]}{\mathbb{E}[(T_i - e(\mathbf{X_i})) (Z_i - h(\mathbf{X_i}))]} = \frac{\text{Cov}[(Y_i - \mu(\mathbf{X_i})), (Z_i - h(\mathbf{X_i}))]}{\text{Cov}[(T_i - e(\mathbf{X_i})), (Z_i - h(\mathbf{X_i}))]}$$
+
+
+
+
+
+
+## Partially Linear IV Model {.smaller}
+
+
+
+- `Nuisance parameters:` $\quad \mu(\mathbf{X_i}) = \mathbb{E}[Y_i \mid \mathbf{X_i}] \quad \quad \quad e(\mathbf{X_i}) = \mathbb{E}[T_i \mid \mathbf{X_i}] \quad \quad \quad h(\mathbf{X_i}) = \mathbb{E}[Z_i \mid \mathbf{X_i}]$
+
+
+<br>
+
+
+- **DML recipe**: we need a `moment condition of a Neyman-orthogonal score` with the estimand as solution:
+
+
+$$
+\begin{align}
+\mathbb{E} [ 
+( Y_i - \mu(X) - \tau (T_i - e(\mathbf{X_i})) ) (Z - h(\mathbf{X_i}))
+] &= 0 \\
+\mathbb{E} \left[ 
+(Y_i - \mu(\mathbf{X_i}))(Z_i - h(\mathbf{X_i})) - \tau (T_i - e(\mathbf{X_i}))(Z_i - h(\mathbf{X_i})) 
+\right] &= 0 \\
+\tau \mathbb{E} [ \underbrace{(-1)(T_i - e(\mathbf{X_i}))(Z_i - h(\mathbf{X_i}))}_{\psi_a} ] + \mathbb{E} [ \underbrace{(Y_i - \mu(\mathbf{X_i}))(Z_i - h(\mathbf{X_i}))}_{\psi_b} ] &= 0
+\end{align}
+$$
+
+
+
+
+
+
+## Interactive (AIPW) IV Model {.smaller}
+
+- Relaxing homogeneous treatment assumption, but we require `conditional unconfoundedness` of $Z_i$:
+  $$\begin{align}\begin{aligned}Y_i = g(T_i, \mathbf{X_i}) + \epsilon_{Y_i}, & &\mathbb{E}(\epsilon_{Y_i} | Z_i,\mathbf{X_i}) = 0 \\Z_i = h(\mathbf{X_i}) + \epsilon_{Z_i}, & &\mathbb{E}(\epsilon_{Z_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}$$
+
+
+<br>
+
+- Based on [Frölich (1988)](https://www.sciencedirect.com/science/article/abs/pii/S0304407606001023?via%3Dihub), generalizing the Wald estimator of LATE to the case with confounders.
+  - ATE of $Z_i$ on $Y_i$ (reduced form, intention-to-treat effect) divided by ATE of $Z_i$ on $T_i$ (first stage / complier share).
+
+$$\tau_{\text{LATE}} = \frac{\mathbb{E}\left[\mu(1, \mathbf{X_i}) - \mu(0, \mathbf{X_i}) + \frac{Z_i(Y_i - \mu(1, \mathbf{X_i}))}{h(\mathbf{X_i})} - \frac{(1-Z_i)(Y_i - \mu(0, \mathbf{X_i})}{(1-h(\mathbf{X_i}))} \right]}{\mathbb{E}\left[e(1, \mathbf{X_i}) - e(0, \mathbf{X_i}) + \frac{Z_i(T_i - e(1, \mathbf{X_i}))}{h(\mathbf{X_i})} - \frac{(1-Z_i)(T_i - e(0, \mathbf{X_i})}{(1-h(\mathbf{X_i}))} \right]}$$
+
+
+
+
+
+
+
+
+
+
+## Interactive (AIPW) IV Model {.smaller}
+
+
+
+-  `Nuisance parameters:` $\quad \mu(Z_i, \mathbf{X_i}) = \mathbb{E}[Y_i \mid Z_i, \mathbf{X_i}] \quad \quad \quad e(\mathbf{Z_i, X_i}) = P[T_i \mid Z_i, \mathbf{X_i}] \quad \quad \quad h(\mathbf{X_i}) = P[Z_i \mid \mathbf{X_i}]$
+
+
+<br>
+
+
+- **DML recipe**: we need a `moment condition of a Neyman-orthogonal score` with the estimand as solution:
+
+$$
+\begin{align}
+\mathbb{E}[\psi_b] + \mathbb{E}[\psi_a] \cdot \tau_{\text{LATE}} = &\mathbb{E}\bigg[\mu(1, \mathbf{X_i}) - \mu(0, \mathbf{X_i}) + \frac{Z_i(Y_i - \mu(1, \mathbf{X_i}))}{h(\mathbf{X_i})} - \frac{(1-Z_i)(Y_i - \mu(0, \mathbf{X_i})}{(1-h(\mathbf{X_i}))} \bigg] \\
+&+ \mathbb{E}\bigg[(-1)\left[e(1, \mathbf{X_i}) - e(0, \mathbf{X_i}) + \frac{Z_i(T_i - e(1, \mathbf{X_i}))}{h(\mathbf{X_i})} - \frac{(1-Z_i)(T_i - e(0, \mathbf{X_i})}{(1-h(\mathbf{X_i}))}\right] \bigg] \cdot \tau_{\text{LATE}} = 0
+\end{align}
+$$
+
+
+
+
+
+
+## IV Estimation with DML-AIPW: Example {.smaller}
+
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+- Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.
+- Participation in 401(k) program is not random, but influenced by income together with unobserved saving preferences.
+- Eligibility for 401(k) program can serve as an instrument, but it is not purely random:
+  - Employers differ in leniency to offer a 401(k) program to their employees.
+  - Wealthy companies are more likely to offer a 401(k) program and pay higher income.
+  - Employees have chosen their employer based on their income/saving preferences.
+
+
+:::
+
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: true
+
+# Load required packages
+library(DoubleML)
+library(mlr3)
+library(mlr3learners)
+library(data.table)
+
+# suppress messages during fitting
+lgr::get_logger("mlr3")$set_threshold("warn")
+
+# load data as a data.table
+data = fetch_401k(return_type = "data.table", instrument = TRUE)
+
+# Set up basic model: Specify variables for data-backend
+features_base = c("age", "inc", "educ", "fsize","marr", "twoearn", "db", "pira", "hown")
+
+# Initialize DoubleMLData (data-backend of DoubleML)
+data_dml_base = DoubleMLData$new(data,
+                                 y_col = "net_tfa", # outcome variable
+                                 d_cols = "p401", # treatment variable
+                                 x_cols = features_base, # covariates
+                                 z_cols = "e401") # instrument
+
+# Initialize Random Forrest Learner
+randomForest = lrn("regr.ranger")
+randomForest_class = lrn("classif.ranger")
+
+# Random Forest
+set.seed(123)
+dml_iivm_forest = DoubleMLIIVM$new(data_dml_base,
+                              ml_g = randomForest,
+                              ml_m = randomForest_class,
+                              ml_r = randomForest_class,
+                              n_folds = 3, 
+                              score = "LATE", # only choice for Interactive IV models
+                              trimming_threshold = 0.01,
+                              subgroups = list(always_takers = FALSE, # not in sample: no participation w/o eligibility.
+                                               never_takers = TRUE))
+
+# Set nuisance-part specific parameters
+dml_iivm_forest$set_ml_nuisance_params(
+    "ml_g0", "p401", 
+    list(max.depth = 6, mtry = 4, min.node.size = 7))  # mu(Z=0,X) = E[Y | Z=0, X]
+dml_iivm_forest$set_ml_nuisance_params(
+    "ml_g1", "p401", 
+    list(max.depth = 6, mtry = 3, min.node.size = 5)) # mu(Z=1,X) = E[Y | Z=1, X]
+dml_iivm_forest$set_ml_nuisance_params(
+    "ml_m", "p401", 
+    list(max.depth = 6, mtry = 3, min.node.size = 6)) # h(X) = P(Z=1 | X)
+dml_iivm_forest$set_ml_nuisance_params(
+    "ml_r1", "p401", 
+    list(max.depth = 4, mtry = 7, min.node.size = 6)) # e(Z,X) = P(T=1 | Z, X)
+
+dml_iivm_forest$fit()
+dml_iivm_forest$summary()
+```
+
+
+::: 
+
+
+::: 
+
+
+
+{{< include ../assets/about.qmd >}}
