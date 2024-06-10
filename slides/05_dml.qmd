@@ -345,7 +345,7 @@ summary(dr)                             # show results
 ## Partially Linear Regression Model
 
 - Observed $Y_i$ and $T_i$ are a partially linear function of confounding variables $X_i$:
-  $\begin{align}\begin{aligned}Y_i = \tau T_i + g(\mathbf{X_i}) + \epsilon_{Y_i}, & &\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = m(\mathbf{X_i}) + \epsilon_{T_i}, & &\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}$
+  $\begin{align}\begin{aligned}Y_i = \tau T_i + g(\mathbf{X_i}) + \epsilon_{Y_i}, & &\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = e(\mathbf{X_i}) + \epsilon_{T_i}, & &\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}$
 
 ::: {.fragment}
 
@@ -376,7 +376,7 @@ summary(dr)                             # show results
   - Population estimand: 
     - $\tau_{\text{ATE}} = \arg \min_{\tilde{\tau}} \mathbb{E}[( \underbrace{ Y_i - \mu(\mathbf{X_i})}_{\text{pseudo outcome}} - \tilde{\tau} \underbrace{( T_i - e(\mathbf{X_i}))}_{\text{single regressor}})^2] = \frac{\text{Cov}[(Y_i - \mu(\mathbf{X_i})) (T_i - e(\mathbf{X_i}))]}{\text{Var}[T_i - e(\mathbf{X_i})]}$
   - Sample estimator: 
-    - $\hat{\tau}_{\text{ATE}} = \arg \min_{\tilde{\tau}} \frac{1}{N}\sum_{i=1}^n ( \underbrace{Y_i - \mu(\mathbf{X_i})}_{\text{pseudo outcome}} - \tilde{\tau} \underbrace{( T_i - e(\mathbf{X_i}))}_{\text{single regressor}})^2 = \frac{\sum_{i=1}^n (Y_i - \mu(\mathbf{X_i})) (T_i - e(\mathbf{X_i}))}{\sum_{i=1}^n (T_i - e(\mathbf{X_i}))^2}$
+    - $\hat{\tau}_{\text{ATE}} = \arg \min_{\tilde{\tau}} \frac{1}{N}\sum_{i=1}^n ( \underbrace{Y_i - \hat{\mu}(\mathbf{X_i})}_{\text{pseudo outcome}} - \tilde{\tau} \underbrace{( T_i - \hat{e}(\mathbf{X_i}))}_{\text{single regressor}})^2 = \frac{\sum_{i=1}^n (Y_i - \hat{\mu}(\mathbf{X_i})) (T_i - \hat{e}(\mathbf{X_i}))}{\sum_{i=1}^n (T_i - \hat{e}(\mathbf{X_i}))^2}$
 
 :::
 
@@ -443,7 +443,7 @@ summary(dr)                             # show results
 ::: {.column width="50%"}
 
 
-![](_images/5/cross_validation.jpg){fig-align="center" height=70% width=70%}
+![](_images/_5/cross_validation.jpg){fig-align="center" height=70% width=70%}
 :::
 
 :::
@@ -669,7 +669,7 @@ for (i_rep in seq_len(n_rep)) {
 ## Interactive Regression Model
 
 - More general model that relaxes the homogeneous treatment assumption (binary $T_i$ is not additively separable anymore):
-  $\begin{align}\begin{aligned}Y_i = g(T_i, \mathbf{X_i}) + \epsilon_{Y_i}, & &\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = m(\mathbf{X_i}) + \epsilon_{T_i}, & &\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}$
+  $\begin{align}\begin{aligned}Y_i = \mu(T_i, \mathbf{X_i}) + \epsilon_{Y_i}, & &\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = e(\mathbf{X_i}) + \epsilon_{T_i}, & &\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}$
 
 ::: {.fragment}
 
@@ -693,10 +693,10 @@ for (i_rep in seq_len(n_rep)) {
   2. Form prediction model for the outcome: $\hat{\mu}(T_i, \mathbf{X_i})$
   
   3. a) Estimate the APO: 
-    - $\mu_t^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(t, \mathbf{X_i}) + \frac{\mathbb{1}(T_i = t)(Y_i - \hat{\mu}(t, \mathbf{X_i}))}{\hat{e}_t(\mathbf{X_i})} \bigg) \\$
+    - $\hat{\mu}_t^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(t, \mathbf{X_i}) + \frac{\mathbb{1}(T_i = t)(Y_i - \hat{\mu}(t, \mathbf{X_i}))}{\hat{e}_t(\mathbf{X_i})} \bigg) \\$
     
   3. b) Estimate the ATE:
-    - $\tau_{\text{ATE}}^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(1, \mathbf{X_i}) - \hat{\mu}(0, \mathbf{X_i}) + \frac{T_i(Y_i - \hat{\mu}(1, \mathbf{X_i}))}{\hat{e}_1(\mathbf{X_i})} - \frac{(1-T_i)(Y_i - \hat{\mu}(0, \mathbf{X_i})}{\hat{e}_0(\mathbf{X_i}))} \bigg)$
+    - $\hat{\tau}_{\text{ATE}}^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(1, \mathbf{X_i}) - \hat{\mu}(0, \mathbf{X_i}) + \frac{T_i(Y_i - \hat{\mu}(1, \mathbf{X_i}))}{\hat{e}_1(\mathbf{X_i})} - \frac{(1-T_i)(Y_i - \hat{\mu}(0, \mathbf{X_i})}{\hat{e}_0(\mathbf{X_i}))} \bigg)$
 
 
 
@@ -938,11 +938,216 @@ $$
 ::: {.fragment}
 
 - Estimator distribution and influence function are closely linked:
-  - $\sqrt{N}(\hat{\theta} - \theta) = \frac{1}{\sqrt{N}} \sum_{i} \psi(W_i; \theta, \eta_i) + o_p(1) \xrightarrow{d} N(0, \underbrace{\operatorname{Var}[\psi(W; \theta, \eta)]}_{\sigma^2})$
+  - $\sqrt{N}(\hat{\theta} - \theta) = \frac{1}{\sqrt{N}} \sum_{i} \Psi(W_i; \theta, \eta_i) + o_p(1) \xrightarrow{d} N(0, \underbrace{\operatorname{Var}[\Psi(W; \theta, \eta)]}_{\sigma^2})$
 - Estimator variance (suppressing arguments for brevity):
-  - $\sigma^2 = \text{Var}[\psi] = \mathbb{E}[\psi^2] - \underbrace{\mathbb{E}[\psi]^2}_{=0} = \mathbb{E}[\psi^2] = \mathbb{E}[(\mathbb{E}[\psi_a]^{-1} \psi)^2] = \mathbb{E}[\psi_a]^{-2} \mathbb{E}[\psi^2] = \frac{\mathbb{E}[\psi^2]}{\mathbb{E}[\psi_a]^2}$
+  - $\sigma^2 = \text{Var}[\Psi] = \mathbb{E}[\Psi^2] - \underbrace{\mathbb{E}[\Psi]^2}_{=0} = \mathbb{E}[\Psi^2] = \mathbb{E}[(\mathbb{E}[\psi_a]^{-1} \psi)^2] = \mathbb{E}[\psi_a]^{-2} \mathbb{E}[\psi^2] = \frac{\mathbb{E}[\psi^2]}{\mathbb{E}[\psi_a]^2}$
 
 
 :::
 
+
+## Double ML Recipe: Example {.smaller}
+
+
+- Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.
+
+::: {.columns}
+
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+# Load required packages
+library(hdm)
+library(mlr3)
+library(mlr3learners)
+library(tidyverse)
+
+set.seed(1234) # for replicability
+
+# Get data
+data(pension)
+pension <- pension[,c("net_tfa", "p401", "age", "db", "educ", "fsize", 
+                   "hown", "inc", "male", "marr", "pira", "twoearn")]
+# Outcome
+Y = pension$net_tfa
+# Treatment
+T = pension$p401
+
+# create folds
+N = nrow(pension)
+nfolds = 5
+fold = sample(1:nfolds,N,replace=TRUE)
+
+
+# initialize nuisance parameters
+ehat = muhat = muhat0 = muhat1 = rep(NA,N)
+
+# Define prediction model for the treatment/exposure
+task_e <- as_task_classif(pension |> select(-net_tfa), target = "p401")
+lrnr_e <- lrn("classif.ranger", predict_type = "prob")
+
+# Define prediction model for the outcome
+task_mu <- as_task_regr(pension |> select(-p401), target = "net_tfa")
+lrnr_mu <- lrn("regr.ranger", predict_type = "response")
+
+# cross fitting of nuisance parameters
+for (i in 1:nfolds){
+  # propensity score e(x)
+  lrnr_e$train(task_e, row_ids = which(fold != i))
+  ehat[which(fold == i)] <- lrnr_e$predict(task_e, row_ids = which(fold == i))$prob[, 2]
+  
+  # outcome mu(x)
+  lrnr_mu$train(task_mu, row_ids = which(fold != i))
+  muhat[which(fold == i)] <- lrnr_mu$predict(task_mu, row_ids = which(fold == i))$response
+  
+  # outcome mu(0,x)
+  lrnr_mu$train(task_mu, row_ids = intersect(which(fold != i), which(pension$p401 == 0)))
+  muhat0[which(fold == i)] <- lrnr_mu$predict(task_mu, row_ids = which(fold == i))$response
+  
+  # outcome mu(1,x)
+  lrnr_mu$train(task_mu, row_ids = intersect(which(fold != i), which(pension$p401 == 1)))
+  muhat1[which(fold == i)] <- lrnr_mu$predict(task_mu, row_ids = which(fold == i))$response
+}
+
+```
+
+:::
+
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+# DML-PLR
+psi_a = -(T - ehat)^2
+psi_b = (Y - muhat) * (T - ehat)
+theta = -sum(psi_b) / sum(psi_a)
+psi = theta * psi_a + psi_b
+Psi = - psi / mean(psi_a)
+sigma2 = var(Psi)
+# sigma2 = mean(psi^2) / mean(psi_a)^2
+se = sqrt(sigma2 / N)
+t = theta / se
+p = 2 * pt(abs(t),N,lower = FALSE)
+result = c(round(theta, 2), round(se, 2), round(t, 2), round(p, 2))
+result
+
+# DML-AIPW
+psi_a = rep(-1,length(Y))
+psi_b = muhat1 - muhat0 + T * (Y - muhat1) / ehat - (1 - T) * (Y - muhat0) / (1-ehat)
+theta = -sum(psi_b) / sum(psi_a)
+psi = theta * psi_a + psi_b
+Psi = - psi / mean(psi_a)
+sigma2 = var(Psi)
+# sigma2 = mean(psi^2) / mean(psi_a)^2
+se = sqrt(sigma2 / N)
+t = theta / se
+p = 2 * pt(abs(t),N,lower = FALSE)
+result = c(round(theta, 2), round(se, 2), round(t, 2), round(p, 2))
+result
+```
+
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+# Load required packages
+library(hdm)
+library(mlr3)
+library(mlr3learners)
+library(tidyverse)
+
+set.seed(1234) # for replicability
+
+# Get data
+data(pension)
+pension <- pension[,c("net_tfa", "p401", "age", "db", "educ", "fsize", 
+                   "hown", "inc", "male", "marr", "pira", "twoearn")]
+# Outcome
+Y = pension$net_tfa
+# Treatment
+T = pension$p401
+
+# create folds
+N = nrow(pension)
+nfolds = 5
+fold = sample(1:nfolds,N,replace=TRUE)
+
+
+# initialize nuisance parameters
+ehat = muhat = muhat0 = muhat1 = rep(NA,N)
+
+# Define prediction model for the treatment/exposure
+task_e <- as_task_classif(pension |> select(-net_tfa), target = "p401")
+lrnr_e <- lrn("classif.ranger", predict_type = "prob")
+
+# Define prediction model for the outcome
+task_mu <- as_task_regr(pension |> select(-p401), target = "net_tfa")
+lrnr_mu <- lrn("regr.ranger", predict_type = "response")
+
+# cross fitting of nuisance parameters
+for (i in 1:nfolds){
+  # propensity score e(x)
+  lrnr_e$train(task_e, row_ids = which(fold != i))
+  ehat[which(fold == i)] <- lrnr_e$predict(task_e, row_ids = which(fold == i))$prob[, 2]
+  
+  # outcome mu(x)
+  lrnr_mu$train(task_mu, row_ids = which(fold != i))
+  muhat[which(fold == i)] <- lrnr_mu$predict(task_mu, row_ids = which(fold == i))$response
+  
+  # outcome mu(0,x)
+  lrnr_mu$train(task_mu, row_ids = intersect(which(fold != i), which(pension$p401 == 0)))
+  muhat0[which(fold == i)] <- lrnr_mu$predict(task_mu, row_ids = which(fold == i))$response
+  
+  # outcome mu(1,x)
+  lrnr_mu$train(task_mu, row_ids = intersect(which(fold != i), which(pension$p401 == 1)))
+  muhat1[which(fold == i)] <- lrnr_mu$predict(task_mu, row_ids = which(fold == i))$response
+}
+
+# avoid scientific notation
+options(scipen=999)
+
+# DML-PLR
+psi_a = -(T - ehat)^2
+psi_b = (Y - muhat) * (T - ehat)
+theta = -sum(psi_b) / sum(psi_a)
+psi = theta * psi_a + psi_b
+Psi = - psi / mean(psi_a)
+sigma2 = var(Psi)
+# sigma2 = mean(psi^2) / mean(psi_a)^2
+se = sqrt(sigma2 / N)
+t = theta / se
+p = 2 * pt(abs(t),N,lower = FALSE)
+result = c(round(theta, 2), round(se, 2), round(t, 2), round(p, 2))
+result
+
+# DML-AIPW
+psi_a = rep(-1,length(Y))
+psi_b = muhat1 - muhat0 + T * (Y - muhat1) / ehat - (1 - T) * (Y - muhat0) / (1-ehat)
+theta = -sum(psi_b) / sum(psi_a)
+psi = theta * psi_a + psi_b
+Psi = - psi / mean(psi_a)
+sigma2 = var(Psi)
+# sigma2 = mean(psi^2) / mean(psi_a)^2
+se = sqrt(sigma2 / N)
+t = theta / se
+p = 2 * pt(abs(t),N,lower = FALSE)
+result = c(round(theta, 2), round(se, 2), round(t, 2), round(p, 2))
+result
+```
+
+
+:::
+
+:::
+
 {{< include ../assets/about.qmd >}}
+

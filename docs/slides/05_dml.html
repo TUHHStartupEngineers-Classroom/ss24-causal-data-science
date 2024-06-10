@@ -412,7 +412,7 @@ Christoph Ihl
     </div>
 </div>
 
-  <p class="date">Monday, 3. June 2024</p>
+  <p class="date">Monday, 10. June 2024</p>
 </section>
 <section>
 <section id="preliminaries" class="title-slide slide level1 center" data-stack-name="Preliminaries">
@@ -767,7 +767,7 @@ included in the nuisance models)
 <section id="partially-linear-regression-model" class="slide level2">
 <h2>Partially Linear Regression Model</h2>
 <ul>
-<li>Observed <span class="math inline">\(Y_i\)</span> and <span class="math inline">\(T_i\)</span> are a partially linear function of confounding variables <span class="math inline">\(X_i\)</span>: <span class="math inline">\(\begin{align}\begin{aligned}Y_i = \tau T_i + g(\mathbf{X_i}) + \epsilon_{Y_i}, &amp; &amp;\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = m(\mathbf{X_i}) + \epsilon_{T_i}, &amp; &amp;\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}\)</span></li>
+<li>Observed <span class="math inline">\(Y_i\)</span> and <span class="math inline">\(T_i\)</span> are a partially linear function of confounding variables <span class="math inline">\(X_i\)</span>: <span class="math inline">\(\begin{align}\begin{aligned}Y_i = \tau T_i + g(\mathbf{X_i}) + \epsilon_{Y_i}, &amp; &amp;\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = e(\mathbf{X_i}) + \epsilon_{T_i}, &amp; &amp;\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}\)</span></li>
 </ul>
 <div class="fragment">
 <ul>
@@ -807,7 +807,7 @@ included in the nuisance models)
 </ul></li>
 <li>Sample estimator:
 <ul>
-<li><span class="math inline">\(\hat{\tau}_{\text{ATE}} = \arg \min_{\tilde{\tau}} \frac{1}{N}\sum_{i=1}^n ( \underbrace{Y_i - \mu(\mathbf{X_i})}_{\text{pseudo outcome}} - \tilde{\tau} \underbrace{( T_i - e(\mathbf{X_i}))}_{\text{single regressor}})^2 = \frac{\sum_{i=1}^n (Y_i - \mu(\mathbf{X_i})) (T_i - e(\mathbf{X_i}))}{\sum_{i=1}^n (T_i - e(\mathbf{X_i}))^2}\)</span></li>
+<li><span class="math inline">\(\hat{\tau}_{\text{ATE}} = \arg \min_{\tilde{\tau}} \frac{1}{N}\sum_{i=1}^n ( \underbrace{Y_i - \hat{\mu}(\mathbf{X_i})}_{\text{pseudo outcome}} - \tilde{\tau} \underbrace{( T_i - \hat{e}(\mathbf{X_i}))}_{\text{single regressor}})^2 = \frac{\sum_{i=1}^n (Y_i - \hat{\mu}(\mathbf{X_i})) (T_i - \hat{e}(\mathbf{X_i}))}{\sum_{i=1}^n (T_i - \hat{e}(\mathbf{X_i}))^2}\)</span></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -875,7 +875,7 @@ included in the nuisance models)
 </div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="_images/5/cross_validation.jpg" class="quarto-figure quarto-figure-center" style="width:70.0%;height:70.0%"></p>
+<p><img data-src="_images/_5/cross_validation.jpg" class="quarto-figure quarto-figure-center" style="width:70.0%;height:70.0%"></p>
 </figure>
 </div>
 </div>
@@ -996,7 +996,7 @@ included in the nuisance models)
 <section id="interactive-regression-model" class="slide level2">
 <h2>Interactive Regression Model</h2>
 <ul>
-<li>More general model that relaxes the homogeneous treatment assumption (binary <span class="math inline">\(T_i\)</span> is not additively separable anymore): <span class="math inline">\(\begin{align}\begin{aligned}Y_i = g(T_i, \mathbf{X_i}) + \epsilon_{Y_i}, &amp; &amp;\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = m(\mathbf{X_i}) + \epsilon_{T_i}, &amp; &amp;\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}\)</span></li>
+<li>More general model that relaxes the homogeneous treatment assumption (binary <span class="math inline">\(T_i\)</span> is not additively separable anymore): <span class="math inline">\(\begin{align}\begin{aligned}Y_i = \mu(T_i, \mathbf{X_i}) + \epsilon_{Y_i}, &amp; &amp;\mathbb{E}(\epsilon_{Y_i} | T_i,\mathbf{X_i}) = 0 \\T_i = e(\mathbf{X_i}) + \epsilon_{T_i}, &amp; &amp;\mathbb{E}(\epsilon_{T_i} | \mathbf{X_i}) = 0\end{aligned}\end{align}\)</span></li>
 </ul>
 <div class="fragment">
 <ul>
@@ -1026,7 +1026,7 @@ included in the nuisance models)
 </ol></li>
 </ol>
 <ul>
-<li><span class="math inline">\(\mu_t^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(t, \mathbf{X_i}) + \frac{\mathbb{1}(T_i = t)(Y_i - \hat{\mu}(t, \mathbf{X_i}))}{\hat{e}_t(\mathbf{X_i})} \bigg) \\\)</span></li>
+<li><span class="math inline">\(\hat{\mu}_t^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(t, \mathbf{X_i}) + \frac{\mathbb{1}(T_i = t)(Y_i - \hat{\mu}(t, \mathbf{X_i}))}{\hat{e}_t(\mathbf{X_i})} \bigg) \\\)</span></li>
 </ul>
 <ol start="3" type="1">
 <li><ol start="2" type="a">
@@ -1034,7 +1034,7 @@ included in the nuisance models)
 </ol></li>
 </ol>
 <ul>
-<li><span class="math inline">\(\tau_{\text{ATE}}^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(1, \mathbf{X_i}) - \hat{\mu}(0, \mathbf{X_i}) + \frac{T_i(Y_i - \hat{\mu}(1, \mathbf{X_i}))}{\hat{e}_1(\mathbf{X_i})} - \frac{(1-T_i)(Y_i - \hat{\mu}(0, \mathbf{X_i})}{\hat{e}_0(\mathbf{X_i}))} \bigg)\)</span></li>
+<li><span class="math inline">\(\hat{\tau}_{\text{ATE}}^{\text{AIPW}} = \frac{1}{N}\sum_{i=1}^n \bigg(\hat{\mu}(1, \mathbf{X_i}) - \hat{\mu}(0, \mathbf{X_i}) + \frac{T_i(Y_i - \hat{\mu}(1, \mathbf{X_i}))}{\hat{e}_1(\mathbf{X_i})} - \frac{(1-T_i)(Y_i - \hat{\mu}(0, \mathbf{X_i})}{\hat{e}_0(\mathbf{X_i}))} \bigg)\)</span></li>
 </ul></li>
 </ul>
 <div class="fragment">
@@ -1303,13 +1303,115 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <ul>
 <li>Estimator distribution and influence function are closely linked:
 <ul>
-<li><span class="math inline">\(\sqrt{N}(\hat{\theta} - \theta) = \frac{1}{\sqrt{N}} \sum_{i} \psi(W_i; \theta, \eta_i) + o_p(1) \xrightarrow{d} N(0, \underbrace{\operatorname{Var}[\psi(W; \theta, \eta)]}_{\sigma^2})\)</span></li>
+<li><span class="math inline">\(\sqrt{N}(\hat{\theta} - \theta) = \frac{1}{\sqrt{N}} \sum_{i} \Psi(W_i; \theta, \eta_i) + o_p(1) \xrightarrow{d} N(0, \underbrace{\operatorname{Var}[\Psi(W; \theta, \eta)]}_{\sigma^2})\)</span></li>
 </ul></li>
 <li>Estimator variance (suppressing arguments for brevity):
 <ul>
-<li><span class="math inline">\(\sigma^2 = \text{Var}[\psi] = \mathbb{E}[\psi^2] - \underbrace{\mathbb{E}[\psi]^2}_{=0} = \mathbb{E}[\psi^2] = \mathbb{E}[(\mathbb{E}[\psi_a]^{-1} \psi)^2] = \mathbb{E}[\psi_a]^{-2} \mathbb{E}[\psi^2] = \frac{\mathbb{E}[\psi^2]}{\mathbb{E}[\psi_a]^2}\)</span></li>
+<li><span class="math inline">\(\sigma^2 = \text{Var}[\Psi] = \mathbb{E}[\Psi^2] - \underbrace{\mathbb{E}[\Psi]^2}_{=0} = \mathbb{E}[\Psi^2] = \mathbb{E}[(\mathbb{E}[\psi_a]^{-1} \psi)^2] = \mathbb{E}[\psi_a]^{-2} \mathbb{E}[\psi^2] = \frac{\mathbb{E}[\psi^2]}{\mathbb{E}[\psi_a]^2}\)</span></li>
 </ul></li>
 </ul>
+</div>
+</section>
+<section id="double-ml-recipe-example" class="slide level2 smaller">
+<h2>Double ML Recipe: Example</h2>
+<ul>
+<li>Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># Load required packages</span></span>
+<span id="cb6-2"><a></a><span class="fu">library</span>(hdm)</span>
+<span id="cb6-3"><a></a><span class="fu">library</span>(mlr3)</span>
+<span id="cb6-4"><a></a><span class="fu">library</span>(mlr3learners)</span>
+<span id="cb6-5"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb6-6"><a></a></span>
+<span id="cb6-7"><a></a><span class="fu">set.seed</span>(<span class="dv">1234</span>) <span class="co"># for replicability</span></span>
+<span id="cb6-8"><a></a></span>
+<span id="cb6-9"><a></a><span class="co"># Get data</span></span>
+<span id="cb6-10"><a></a><span class="fu">data</span>(pension)</span>
+<span id="cb6-11"><a></a>pension <span class="ot">&lt;-</span> pension[,<span class="fu">c</span>(<span class="st">"net_tfa"</span>, <span class="st">"p401"</span>, <span class="st">"age"</span>, <span class="st">"db"</span>, <span class="st">"educ"</span>, <span class="st">"fsize"</span>, </span>
+<span id="cb6-12"><a></a>                   <span class="st">"hown"</span>, <span class="st">"inc"</span>, <span class="st">"male"</span>, <span class="st">"marr"</span>, <span class="st">"pira"</span>, <span class="st">"twoearn"</span>)]</span>
+<span id="cb6-13"><a></a><span class="co"># Outcome</span></span>
+<span id="cb6-14"><a></a>Y <span class="ot">=</span> pension<span class="sc">$</span>net_tfa</span>
+<span id="cb6-15"><a></a><span class="co"># Treatment</span></span>
+<span id="cb6-16"><a></a>T <span class="ot">=</span> pension<span class="sc">$</span>p401</span>
+<span id="cb6-17"><a></a></span>
+<span id="cb6-18"><a></a><span class="co"># create folds</span></span>
+<span id="cb6-19"><a></a>N <span class="ot">=</span> <span class="fu">nrow</span>(pension)</span>
+<span id="cb6-20"><a></a>nfolds <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb6-21"><a></a>fold <span class="ot">=</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>nfolds,N,<span class="at">replace=</span><span class="cn">TRUE</span>)</span>
+<span id="cb6-22"><a></a></span>
+<span id="cb6-23"><a></a></span>
+<span id="cb6-24"><a></a><span class="co"># initialize nuisance parameters</span></span>
+<span id="cb6-25"><a></a>ehat <span class="ot">=</span> muhat <span class="ot">=</span> muhat0 <span class="ot">=</span> muhat1 <span class="ot">=</span> <span class="fu">rep</span>(<span class="cn">NA</span>,N)</span>
+<span id="cb6-26"><a></a></span>
+<span id="cb6-27"><a></a><span class="co"># Define prediction model for the treatment/exposure</span></span>
+<span id="cb6-28"><a></a>task_e <span class="ot">&lt;-</span> <span class="fu">as_task_classif</span>(pension <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>net_tfa), <span class="at">target =</span> <span class="st">"p401"</span>)</span>
+<span id="cb6-29"><a></a>lrnr_e <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.ranger"</span>, <span class="at">predict_type =</span> <span class="st">"prob"</span>)</span>
+<span id="cb6-30"><a></a></span>
+<span id="cb6-31"><a></a><span class="co"># Define prediction model for the outcome</span></span>
+<span id="cb6-32"><a></a>task_mu <span class="ot">&lt;-</span> <span class="fu">as_task_regr</span>(pension <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>p401), <span class="at">target =</span> <span class="st">"net_tfa"</span>)</span>
+<span id="cb6-33"><a></a>lrnr_mu <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"regr.ranger"</span>, <span class="at">predict_type =</span> <span class="st">"response"</span>)</span>
+<span id="cb6-34"><a></a></span>
+<span id="cb6-35"><a></a><span class="co"># cross fitting of nuisance parameters</span></span>
+<span id="cb6-36"><a></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>nfolds){</span>
+<span id="cb6-37"><a></a>  <span class="co"># propensity score e(x)</span></span>
+<span id="cb6-38"><a></a>  lrnr_e<span class="sc">$</span><span class="fu">train</span>(task_e, <span class="at">row_ids =</span> <span class="fu">which</span>(fold <span class="sc">!=</span> i))</span>
+<span id="cb6-39"><a></a>  ehat[<span class="fu">which</span>(fold <span class="sc">==</span> i)] <span class="ot">&lt;-</span> lrnr_e<span class="sc">$</span><span class="fu">predict</span>(task_e, <span class="at">row_ids =</span> <span class="fu">which</span>(fold <span class="sc">==</span> i))<span class="sc">$</span>prob[, <span class="dv">2</span>]</span>
+<span id="cb6-40"><a></a>  </span>
+<span id="cb6-41"><a></a>  <span class="co"># outcome mu(x)</span></span>
+<span id="cb6-42"><a></a>  lrnr_mu<span class="sc">$</span><span class="fu">train</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">which</span>(fold <span class="sc">!=</span> i))</span>
+<span id="cb6-43"><a></a>  muhat[<span class="fu">which</span>(fold <span class="sc">==</span> i)] <span class="ot">&lt;-</span> lrnr_mu<span class="sc">$</span><span class="fu">predict</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">which</span>(fold <span class="sc">==</span> i))<span class="sc">$</span>response</span>
+<span id="cb6-44"><a></a>  </span>
+<span id="cb6-45"><a></a>  <span class="co"># outcome mu(0,x)</span></span>
+<span id="cb6-46"><a></a>  lrnr_mu<span class="sc">$</span><span class="fu">train</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">intersect</span>(<span class="fu">which</span>(fold <span class="sc">!=</span> i), <span class="fu">which</span>(pension<span class="sc">$</span>p401 <span class="sc">==</span> <span class="dv">0</span>)))</span>
+<span id="cb6-47"><a></a>  muhat0[<span class="fu">which</span>(fold <span class="sc">==</span> i)] <span class="ot">&lt;-</span> lrnr_mu<span class="sc">$</span><span class="fu">predict</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">which</span>(fold <span class="sc">==</span> i))<span class="sc">$</span>response</span>
+<span id="cb6-48"><a></a>  </span>
+<span id="cb6-49"><a></a>  <span class="co"># outcome mu(1,x)</span></span>
+<span id="cb6-50"><a></a>  lrnr_mu<span class="sc">$</span><span class="fu">train</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">intersect</span>(<span class="fu">which</span>(fold <span class="sc">!=</span> i), <span class="fu">which</span>(pension<span class="sc">$</span>p401 <span class="sc">==</span> <span class="dv">1</span>)))</span>
+<span id="cb6-51"><a></a>  muhat1[<span class="fu">which</span>(fold <span class="sc">==</span> i)] <span class="ot">&lt;-</span> lrnr_mu<span class="sc">$</span><span class="fu">predict</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">which</span>(fold <span class="sc">==</span> i))<span class="sc">$</span>response</span>
+<span id="cb6-52"><a></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="co"># DML-PLR</span></span>
+<span id="cb7-2"><a></a>psi_a <span class="ot">=</span> <span class="sc">-</span>(T <span class="sc">-</span> ehat)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb7-3"><a></a>psi_b <span class="ot">=</span> (Y <span class="sc">-</span> muhat) <span class="sc">*</span> (T <span class="sc">-</span> ehat)</span>
+<span id="cb7-4"><a></a>theta <span class="ot">=</span> <span class="sc">-</span><span class="fu">sum</span>(psi_b) <span class="sc">/</span> <span class="fu">sum</span>(psi_a)</span>
+<span id="cb7-5"><a></a>psi <span class="ot">=</span> theta <span class="sc">*</span> psi_a <span class="sc">+</span> psi_b</span>
+<span id="cb7-6"><a></a>Psi <span class="ot">=</span> <span class="sc">-</span> psi <span class="sc">/</span> <span class="fu">mean</span>(psi_a)</span>
+<span id="cb7-7"><a></a>sigma2 <span class="ot">=</span> <span class="fu">var</span>(Psi)</span>
+<span id="cb7-8"><a></a><span class="co"># sigma2 = mean(psi^2) / mean(psi_a)^2</span></span>
+<span id="cb7-9"><a></a>se <span class="ot">=</span> <span class="fu">sqrt</span>(sigma2 <span class="sc">/</span> N)</span>
+<span id="cb7-10"><a></a>t <span class="ot">=</span> theta <span class="sc">/</span> se</span>
+<span id="cb7-11"><a></a>p <span class="ot">=</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pt</span>(<span class="fu">abs</span>(t),N,<span class="at">lower =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-12"><a></a>result <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">round</span>(theta, <span class="dv">2</span>), <span class="fu">round</span>(se, <span class="dv">2</span>), <span class="fu">round</span>(t, <span class="dv">2</span>), <span class="fu">round</span>(p, <span class="dv">2</span>))</span>
+<span id="cb7-13"><a></a>result</span>
+<span id="cb7-14"><a></a></span>
+<span id="cb7-15"><a></a><span class="co"># DML-AIPW</span></span>
+<span id="cb7-16"><a></a>psi_a <span class="ot">=</span> <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="fu">length</span>(Y))</span>
+<span id="cb7-17"><a></a>psi_b <span class="ot">=</span> muhat1 <span class="sc">-</span> muhat0 <span class="sc">+</span> T <span class="sc">*</span> (Y <span class="sc">-</span> muhat1) <span class="sc">/</span> ehat <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> T) <span class="sc">*</span> (Y <span class="sc">-</span> muhat0) <span class="sc">/</span> (<span class="dv">1</span><span class="sc">-</span>ehat)</span>
+<span id="cb7-18"><a></a>theta <span class="ot">=</span> <span class="sc">-</span><span class="fu">sum</span>(psi_b) <span class="sc">/</span> <span class="fu">sum</span>(psi_a)</span>
+<span id="cb7-19"><a></a>psi <span class="ot">=</span> theta <span class="sc">*</span> psi_a <span class="sc">+</span> psi_b</span>
+<span id="cb7-20"><a></a>Psi <span class="ot">=</span> <span class="sc">-</span> psi <span class="sc">/</span> <span class="fu">mean</span>(psi_a)</span>
+<span id="cb7-21"><a></a>sigma2 <span class="ot">=</span> <span class="fu">var</span>(Psi)</span>
+<span id="cb7-22"><a></a><span class="co"># sigma2 = mean(psi^2) / mean(psi_a)^2</span></span>
+<span id="cb7-23"><a></a>se <span class="ot">=</span> <span class="fu">sqrt</span>(sigma2 <span class="sc">/</span> N)</span>
+<span id="cb7-24"><a></a>t <span class="ot">=</span> theta <span class="sc">/</span> se</span>
+<span id="cb7-25"><a></a>p <span class="ot">=</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pt</span>(<span class="fu">abs</span>(t),N,<span class="at">lower =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-26"><a></a>result <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">round</span>(theta, <span class="dv">2</span>), <span class="fu">round</span>(se, <span class="dv">2</span>), <span class="fu">round</span>(t, <span class="dv">2</span>), <span class="fu">round</span>(p, <span class="dv">2</span>))</span>
+<span id="cb7-27"><a></a>result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 14082.91  1507.76     9.34     0.00</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 11285.34  1247.14     9.05     0.00</code></pre>
+</div>
+</div>
+</div>
 </div>
 </section></section>
 <section id="section" class="title-slide slide level1 center center-x" data-state="hide-menubar">

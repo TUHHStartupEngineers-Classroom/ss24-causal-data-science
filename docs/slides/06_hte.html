@@ -412,7 +412,7 @@ Christoph Ihl
     </div>
 </div>
 
-  <p class="date">Monday, 3. June 2024</p>
+  <p class="date">Monday, 10. June 2024</p>
 </section>
 <section>
 <section id="introduction" class="title-slide slide level1 center" data-stack-name="Intro">
@@ -653,7 +653,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<img data-src="_images/6/cate_age.png" class="r-stretch quarto-figure quarto-figure-center" width="750">
+<img data-src="_images/_6/cate_age.png" class="r-stretch quarto-figure quarto-figure-center" width="750">
 </figure>
 </div>
 </div>
@@ -938,7 +938,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 </div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<img data-src="_images/6/dr_cates.png" class="r-stretch quarto-figure quarto-figure-center" width="750">
+<img data-src="_images/_6/dr_cates.png" class="r-stretch quarto-figure quarto-figure-center" width="750">
 </figure>
 </div>
 </div>
@@ -1240,7 +1240,7 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 <div class="fragment">
 <ul>
 <li><ol start="3" type="1">
-<li>Instead: <span class="math inline">\(\pi^* = \underset{\pi}{\operatorname{arg\,min}} \space \mathbb{E}[Y_i(\pi(\mathbf{X_i}))] = \underset{\pi}{\operatorname{arg\,min}} \space Q(\pi(\mathbf{X_i})))\)</span></li>
+<li>Instead: <span class="math inline">\(\pi^* = \underset{\pi}{\operatorname{arg\,max}} \space \mathbb{E}[Y_i(\pi(\mathbf{X_i}))] = \underset{\pi}{\operatorname{arg\,max}} \space Q(\pi(\mathbf{X_i})))\)</span></li>
 </ol></li>
 </ul>
 </div>
@@ -1252,16 +1252,16 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 <ul>
 <li>Comparing the value function against a <code>benchmark policy</code> that assigns treatments via <code>fair coin flip</code>:
 <ul>
-<li>50-50 chance of being treated: <span class="math inline">\(\pi^{\text{coin}} \sim \text{Bernoulli}(0,5)\)</span>.</li>
+<li>50-50 chance of being treated: <span class="math inline">\(\pi^{\text{coin}} \sim \text{Bernoulli}(0.5)\)</span>.</li>
 </ul></li>
 </ul></li>
 </ul>
 <p><span class="math display">\[
 \begin{align*}
-\pi^* &amp;= \arg \max_{\pi} Q(\pi) = \arg \max_{\pi} \mathbb{E}[Y(\pi)] = \arg \max_{\pi} \mathbb{E}[Y(\pi) \color{#005e73}{- 0.5 \mathbb{E}[Y(1)] + 0.5 \mathbb{E}[Y(0)]}] \\
+\pi^* &amp;= \arg \max_{\pi} Q(\pi) = \arg \max_{\pi} \mathbb{E}[Y(\pi)] = \arg \max_{\pi} \mathbb{E}[Y(\pi) \color{#00C1D4}{- 0.5 \mathbb{E}[Y(1)] + 0.5 \mathbb{E}[Y(0)]}] \\
 &amp;= \arg \max_{\pi} \mathbb{E}[\pi Y(1) + (1 - \pi) Y(0)] - 0.5 \mathbb{E}[Y(1)] - 0.5 \mathbb{E}[Y(0)] \\
 &amp;= \arg \max_{\pi} \mathbb{E}[(\pi - 0.5) Y(1)] + \mathbb{E}[(0.5 - \pi) Y(0)] = \arg \max_{\pi} \mathbb{E}[(\pi - 0.5) (Y(1) - Y(0))] \\
-&amp;= \arg \max_{\pi}  \color{#005e73}{2} \mathbb{E}[(\pi - 0.5) (Y(1) - Y(0))] \\
+&amp;= \arg \max_{\pi}  {\color{#00C1D4}2} \mathbb{E}[(\pi - 0.5) (Y(1) - Y(0))] \\
 &amp;= \arg \max_{\pi} \mathbb{E}[(2\pi - 1)(Y(1) - Y(0))] \\
 &amp;\overset{LIE}{=} \arg \max_{\pi} \mathbb{E}[(2\pi - 1) \tau(\mathbf{X_i})] \\
 &amp;= \arg \max_{\pi}  \underbrace{\mathbb{E}[|\tau(\mathbf{X_i})| \text{sign}(\tau(\mathbf{X_i})) (2\pi(\mathbf{X_i}) - 1)]}_{A(\pi)} \\
@@ -1296,10 +1296,72 @@ F-statistic: 16.47 on 1 and 9913 DF,  p-value: 4.99e-05</code></pre>
 <ul>
 <li><code>Binary weighted classification problem</code>: classify the sign of the CATE while favoring correct classifications with larger absolute CATEs.
 <ul>
-<li><span class="math inline">\(\hat{\pi} = \underset{\pi \in \Pi}{\arg \max} \left\{ \frac{1}{N} \sum_{i=1}^N \overbrace{|\hat{Y}_{i,\text{ATE}}|}^{\text{weight}} \underbrace{\operatorname{sign}(\hat{Y}_{i,\text{ATE}}}_{\text{to be classified}} \overbrace{(2\pi(X_i) - 1)}^{\text{function to be learned}} \right\}\)</span></li>
+<li><span class="math inline">\(\hat{\pi} = \underset{\pi \in \Pi}{\arg \max} \left\{ \frac{1}{N} \sum_{i=1}^N \overbrace{|\tilde{\tau_i}_{\text{ATE}}^{\text{AIPW}}|}^{\text{weight}} \underbrace{\operatorname{sign}(\tilde{\tau_i}_{\text{ATE}}^{\text{AIPW}})}_{\text{to be classified}} \overbrace{(2\pi(X_i) - 1)}^{\text{function to be learned}} \right\}\)</span></li>
 </ul></li>
 <li>Possible methods: e.g.&nbsp;decision trees/forests, logistic lasso, SVM, etc.</li>
 </ul>
+</div>
+</section>
+<section id="optimal-policy-learning-example" class="slide level2 smaller">
+<h2>Optimal Policy Learning: Example</h2>
+<ul>
+<li>Assess the effect of 401(k) program participation on net financial assets of 9,915 households in the US in 1991.</li>
+<li>First step (not shown): Estimate <span class="math inline">\(\hat{\tau}_{\text{ATE}}^{\text{AIPW}}\)</span> using DoubleML.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="co"># Load required packages</span></span>
+<span id="cb8-2"><a></a><span class="fu">library</span>(mlr3)</span>
+<span id="cb8-3"><a></a><span class="fu">library</span>(mlr3learners)</span>
+<span id="cb8-4"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb8-5"><a></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb8-6"><a></a></span>
+<span id="cb8-7"><a></a><span class="co"># Get and transform the indvidual ATEs (pseudo-outcomes)</span></span>
+<span id="cb8-8"><a></a>data<span class="sc">$</span>ate_i <span class="ot">&lt;-</span> dml_irm_forest[[<span class="st">"psi_b"</span>]] <span class="co"># get numerator of score function, which is equal to pseudo outcome</span></span>
+<span id="cb8-9"><a></a>data<span class="sc">$</span>sign <span class="ot">&lt;-</span> <span class="fu">sign</span>(data<span class="sc">$</span>ate_i) <span class="co"># get sign of pseudo outcomes</span></span>
+<span id="cb8-10"><a></a>data<span class="sc">$</span>weights <span class="ot">&lt;-</span> <span class="fu">abs</span>(data<span class="sc">$</span>ate_i) <span class="co"># get weights (absolute value of pseudo outcomes)</span></span>
+<span id="cb8-11"><a></a></span>
+<span id="cb8-12"><a></a><span class="co"># Optimal Policy Learning with Classification Tree</span></span>
+<span id="cb8-13"><a></a>data <span class="ot">&lt;-</span> data[,<span class="fu">c</span>(<span class="st">"sign"</span>, <span class="st">"weights"</span>, <span class="st">"age"</span>, <span class="st">"db"</span>, <span class="st">"educ"</span>, <span class="st">"fsize"</span>, </span>
+<span id="cb8-14"><a></a>                <span class="st">"hown"</span>, <span class="st">"inc"</span>, <span class="st">"marr"</span>, <span class="st">"pira"</span>, <span class="st">"twoearn"</span>)] <span class="co"># select columns</span></span>
+<span id="cb8-15"><a></a>task <span class="ot">&lt;-</span> <span class="fu">as_task_classif</span>(data, <span class="at">target =</span> <span class="st">"sign"</span>) <span class="co"># task</span></span>
+<span id="cb8-16"><a></a>task<span class="sc">$</span><span class="fu">set_col_roles</span>(<span class="st">"weights"</span>, <span class="at">roles =</span> <span class="st">"weight"</span>) <span class="co"># define weights</span></span>
+<span id="cb8-17"><a></a>lrnr <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>) <span class="co"># learner decision tree</span></span>
+<span id="cb8-18"><a></a>lrnr<span class="sc">$</span><span class="fu">train</span>(task) <span class="co"># train</span></span>
+<span id="cb8-19"><a></a><span class="fu">rpart.plot</span>(lrnr<span class="sc">$</span>model, <span class="at">yesno =</span> <span class="dv">2</span>) <span class="co"># plot</span></span>
+<span id="cb8-20"><a></a></span>
+<span id="cb8-21"><a></a><span class="co"># Classification Analysis</span></span>
+<span id="cb8-22"><a></a>data<span class="sc">$</span>pi <span class="ot">&lt;-</span>  <span class="dv">2</span> <span class="sc">*</span> (<span class="fu">as.numeric</span>(lrnr<span class="sc">$</span><span class="fu">predict</span>(task)<span class="sc">$</span>response) <span class="sc">-</span> <span class="fl">1.5</span>) <span class="co"># Output takes values 1 and 2, therefore recode to -1/1</span></span>
+<span id="cb8-23"><a></a>data_x <span class="ot">&lt;-</span> data[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)] <span class="co"># remove sign and weights</span></span>
+<span id="cb8-24"><a></a>CLAN <span class="ot">=</span> <span class="fu">cbind</span>(<span class="fu">colMeans</span>(data_x[pi <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span>,]),<span class="fu">colMeans</span>(data_x[pi <span class="sc">==</span> <span class="dv">1</span>,])) <span class="co"># calculate CLAN</span></span>
+<span id="cb8-25"><a></a><span class="fu">colnames</span>(CLAN) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"No 401(k)"</span>,<span class="st">"401(k)"</span>) <span class="co"># rename columns</span></span>
+<span id="cb8-26"><a></a><span class="fu">round</span>(CLAN,<span class="dv">2</span>) <span class="co"># print</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="06_hte_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        No 401(k)   401(k)
+age         45.38    41.03
+db           0.00     0.27
+educ        16.02    13.19
+fsize        2.95     2.87
+hown         0.97     0.63
+inc     138411.00 36532.74
+marr         0.97     0.60
+pira         0.72     0.24
+twoearn      0.68     0.38
+pi          -1.00     1.00</code></pre>
+</div>
+</div>
+</div>
 </div>
 </section></section>
 <section id="section" class="title-slide slide level1 center center-x" data-state="hide-menubar">
