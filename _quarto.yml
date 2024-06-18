@@ -9,6 +9,7 @@ project:
     - slides/05_dml.qmd
     - slides/06_hte.qmd
     - slides/07_unob_conf.qmd
+    - slides/08_did.qmd
 execute:
   freeze: false  # re-render only when source changes
   
