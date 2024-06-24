@@ -24,6 +24,8 @@ showtext::showtext_auto()
 source("../assets/setup-ggplot2-tie.R")
 ```
 
+
+
 ```{scss}
 #| echo: false
 div.callout-note {
@@ -121,7 +123,7 @@ $$
 
 ## How DiD Estimation Works
 
-![](_images/_8/did.gif)
+![](_images/8/did.gif)
 
 
 ## Diff-in-Diffs Regression {.smaller}
@@ -395,7 +397,7 @@ feols(
   - **Confounder** if the covariate means evolve differently between the two groups **or** the covariate means start at different levels and evolve in parallel, and the covariate has a time-varying effect on the outcome.
 
 
-## Handling of Confounding Covariates
+## Handling of Confounding Covariates {.smaller}
 
 - Most estimation approaches treat **all covariates as time-invariant**:
   - Time-varying covariates are fixed at their pre-treatment value across all periods.
@@ -608,10 +610,10 @@ lrnr_mu$train(task_mu, row_ids = which(data$ever_treated == 0))
 # predict outcome difference delta_mu among treated
 delta_mu <- lrnr_mu$predict(task_mu, row_ids = which(data$ever_treated == 1))$response
 
-mu1 <- data$re_78[data$ever_treated == 1]
-mu2 <- data$re_75[data$ever_treated == 1]
+Y1 <- data$re_78[data$ever_treated == 1]
+Y0 <- data$re_75[data$ever_treated == 1]
 
-mean( (mu1 - mu2) - delta_mu )
+mean( (Y1 - Y0) - delta_mu )
 
 ```
 
@@ -785,17 +787,704 @@ mean( ((Y1-Y0) - delta_mu) * (T - ehat)/(P*(1-ehat)) )
 
 
 
+# Staggered treatment Timing {data-stack-name="Staggered Timing"}
 
-## Testing for Parallel Trends
+## Staggered Timing {.smaller}
 
--   Next week!
+- Remember basic DiD model:
+  - Two periods and a common treatment date.
+  - Identification from parallel trends and no anticipation.
+  
+- Active recent literature has focused on relaxing the first assumption: 
+  - `What if there are multiple periods and units adopt treatment at different times?`
+  - Maintaining parallel trends and no anticipation assumptions.
+
+::: fragment
+
+- `Notation:`
+  - Panel of observations $i$ and time periods $t = 1 ... T_t$.
+  - Units adopt a binary treatment at different dates $G_i \in (1, ..., T_t) \cup \infty$.
+    - where $G_i = \infty$ means **never-treated**.
+  - Potential outcomes $Y_{it}(g)$ depend on time ($t$) and time you were first treated ($g$).
 
 
-# Staggered Adoption {data-stack-name="Staggered Adoption"}
+:::
 
-## Staggered Adoption
 
--   Next week!
+::: fragment
+- Literature is now starting to consider cases with continuous treatment & treatments that turn on/off.
+  - still developing; for a review see [de Chaisemartin and D’Haultfœuille (2023)](https://academic.oup.com/ectj/article-abstract/26/3/C1/6604378).
+
+:::
+
+
+## Extending the Identifying Assumptions {.smaller}
+
+- Key identifying assumptions from the canonical model are extended in a natural way:
+
+::: {.callout-note icon="false"}
+## Assumption (A.stpt) "Parallel Trends"
+
+$\mathbb{E}[Y_{i,t}(\infty) - Y_{i,t-1}(\infty) | G_i=g] = \mathbb{E}[Y_{i,t-1}(\infty) - Y_{i,t}(\infty) | G_i=g'] \quad \forall g, g', t$.
+:::
+
+- Intuitively, says that if treatment hadn’t happened, all "adoption cohorts" would have parallel average outcomes in all periods. (Note: could impose slightly weaker versions, e.g. only require PT post-treatment).
+
+::: fragment
+::: {.callout-note icon="false"}
+## Assumption (A.stna) "No Anticipation"
+
+$\mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | T_i=1] = 0 \quad$ or $\quad Y_{i,t}(g) = Y_{i,t}(\infty) \quad \forall t < g$
+:::
+
+-   Treatment has no effect on the treatment group before it is administered.
+:::
+
+
+
+
+
+## TWFE Regression with Staggered Timing {.smaller}
+
+- Suppose we extend Two-way fixed effects (TWFE) regression to staggered treatment timing:
+  - $Y_{i,t} = \alpha_i + \gamma_t + \beta D_{it} + \epsilon_{i,t}$
+  - where $D_{it} = 1[t \geq G_i]$ is an indicator for whether the unit has been treated by time $t$.
+
+
+
+::: {.fragment}
+
+- Given no anticipation and parallel trends across all adoption cohorts:
+  - if `treatment effect is constant` across time and units, $Y_{it}(g) - Y_{it}(\infty) \equiv \tau$, `identification possible`: $\tau = \beta$.
+  - if `treatment effect is heterogeneous`, i.e. depends on time since treatement, $Y_{it}(t-r) - Y_{it}(\infty) \equiv \tau_r$, then `identification fails`, because some $\tau_{r}$'s may get negative weights.
+
+:::
+
+::: {.fragment}
+
+- **Reason**:
+  - `Clean comparisons`: DiD’s between treated and not-yet-treated units.
+  - `Forbidden comparisons`: DiD’s between already-treated units (who began treatment at different times).
+    - can lead to negative weights, if treatment effects in the already treated "control group" change over time.
+
+:::
+
+
+
+## Forbidden Comparisons in TWFE: Intuition {.smaller}
+
+- (1) Suppose two period model with two groups: `always treated` (in both periods) & `switchers` (treated only in period 2).
+  - With two periods, $Y_{i,t} = \alpha_i + \gamma_t + \beta D_{it} + \epsilon_{i,t}$ is the same as $\Delta Y_{i} = \alpha +  \beta \Delta D_{i} + u_i$ (by first-differencing).
+  - $\Delta D_{i} = 1$ for switchers and $0$ for the control group of always treated, thus: 
+  - $\hat{\beta} = \left( \overline{Y}_{\text{switchers}, 2} - \overline{Y}_{\text{switchers}, 1} \right) - \left( \overline{Y}_{\text{AT}, 2} - \overline{Y}_{\text{AT}, 1} \right)$
+  - Problem: if treatment effect for always-treated grows over time, $\hat{\beta}$ can get negative weights.
+  
+  
+::: {.fragment}
+
+- (2) Frisch-Waugh-Lovell theorem says that we can obtain $\beta$ in $Y_{i,t} = \alpha_i + \gamma_t + \beta D_{it} + \epsilon_{i,t}$ in two steps:
+  - (1) Regress $D_{i,t}$ on fixed effects (in a linear probability model - LPM): $D_{i,t} = \tilde{\alpha}_i + \tilde{\gamma}_t + \tilde{\epsilon}_{i,t}$.
+  - (2) Regress $Y_{i,t}$ on $D_{i,t} - \hat{D}_{i,t}$, thus: $\beta = \frac{\mathbb{E}(Y_{i,t}(D_{i,t} - \hat{D}_{i,t}))}{Var(D_{i,t} - \hat{D}_{i,t})}$.
+  - However, LPMs can predict $\hat{D}_{i,t} > 1$, and $Y_{it}$ can get negative weight.
+
+:::
+
+::: {.fragment}
+
+- (3) Even if weights are non-negative (i.e. individual $\tau_i$'s are constant - no dynamics), $\beta$ might still be biased:
+  - $\beta = \sum_{i=1}^{N} \sum_{t=1}^{T_t} w_{it} \beta_{it}$: $w_{it}$ is inversely proportional to the variance of $\beta_{it}$.
+    - Proportional to available information for $i$, i.e. the number of observations pre and post treatment.
+  - But are individuals in the middle of the panel also the most representative of the population?
+
+:::
+
+
+## Dynamic TWFE Regression with Staggered Timing {.smaller}
+
+- [Sun and Abraham (2021)](https://www.sciencedirect.com/science/article/abs/pii/S030440762030378X) show that similar issues arise with dynamic TWFE ("event study") specifications:
+  - $Y_{i,t} = \alpha_i + \gamma_t + \sum_{k \neq 0} \beta_k D_{it}^k + \epsilon_{i,t}$
+  - where $D_{it}^k = 1[t - G_i = k]$ are leading and lagging "event time" dummies.
+  
+::: {.fragment}
+
+- This dynamic specification yields a sensible causal estimand when there is `heterogeneity only in time since treatment`.
+- However, if there is heterogeneity in dynamic treatment effects also `across adoption cohorts`, then:
+  - Like for static TWFE, $\beta_k$ may put negative weight on treatment effects after k periods for some units.
+  - Furthermore, $\beta_k$ may be **"contaminated"** by treatment effects at different leads and lags $k' \neq k$.
+
+:::
+
+::: {.fragment}
+
+- Thus, interpreting $\beta_k$ as estimates ...
+  - of the dynamic effects of treatment ($k>0$) may be misleading.
+  - for pre-trends tests ($k<0$) may also be misleading.
+    - We will return to pre-trends tests later.
+
+:::
+
+
+## New DiD-Estimators for Staggered Timing {.smaller}
+
+
+- Estimators based on **clean aggregated comparisons**:
+  - [Callaway and Sant'Anna (2021)](https://www.sciencedirect.com/science/article/abs/pii/S0304407620303948): R package ['did'](https://cran.r-project.org/web/packages/did/index.html) (**Focus**) 
+
+  - [Sun and Abraham (2021)](https://www.sciencedirect.com/science/article/abs/pii/S030440762030378X): R package ['fixest'](https://cran.r-project.org/web/packages/fixest/index.html) 
+
+- Estimators based on **imputation**:
+  - [Gardner, Thakral, Tô, and Yap (2024)](https://neilthakral.github.io/files/papers/2sdd.pdf): R package ['did2s'](https://cran.r-project.org/web/packages/did2s/index.html) (**Focus**) 
+  - [Borusyak, Jaravel, Spiess (2024)](https://academic.oup.com/restud/advance-article/doi/10.1093/restud/rdae007/7601390): R package ['did_imputation'](https://cran.r-project.org/web/packages/didimputation/index.html)
+  - [Wooldridge (2021)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3906345): R package ['etwfe'](https://cran.r-project.org/web/packages/etwfe/index.html)
+
+- Estimators that can handle **non-absorbing and/or non-binary treatments**:
+  - [de Chaisemartin and D'Haultfoeuille (2020)](https://www.aeaweb.org/articles?id=10.1257/aer.20181169): R package ['DIDmultiplegt'](https://cran.r-project.org/web/packages/DIDmultiplegt/index.html)
+  
+- Estimators based on **stacking**:
+  - [Cengiz, Dube, Lindner, and Zipperer (2019)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3315238)
+  - [Dube, Girardi, Jorda, and Taylor (2023)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4433863)
+
+
+
+
+
+## Estimator by Callaway & Sant’Anna (2021) {.smaller}
+
+- [Callaway & Sant’Anna (2021)](https://www.sciencedirect.com/science/article/abs/pii/S0304407620303948) define the `group-time-specific` treatment effect on the treated:
+  - $\tau(g, t) = \mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | G_i=g]$, with $t \geq g$.
+  - ATT in period $t$ for units first treated in period $g$.
+
+::: {.fragment}
+
+- Under PT and No Anticipation, it can be identified as:
+  - $\tau(g, t) = \underbrace{\mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i=g]}_{\text{change for cohort g}} - \underbrace{\mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i = \infty]}_{\text{change for never-treated}}$
+  - Similar to the basic model, this is a two-group two-period comparison.
+    - Similar identification proof (next). 
+  - Differences: 
+    - (1) Period $g-1$ is pre-treatment period (right before cohort g becomes treated). 
+    - (2) More flexibility in terms of comparison group: (a) never-treated, (b) not-yet-treated, (c) not-yet-but-eventually-treated, (d) last-to-be-treated.
+
+:::
+
+
+::: {.fragment}
+
+- Sample version of $\tau(g, t)$:
+  - $\hat{\tau}(g, t) = \frac{1}{N_{g}} \sum_{i=1}^{N_g} \left( Y_{i,t} - Y_{i,g-1} \right) 1[G_i = g] - \frac{1}{N_{\infty}} \sum_{i=1}^{N_{\infty}} \left( Y_{i,t} - Y_{i,g-1} \right) 1[G_i = \infty]$
+
+:::
+
+
+
+## Callaway & Sant’Anna (2021): Proof {.smaller}
+
+- Start with identification result and work backwards: 
+  - $\mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i=g] - \mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i = \infty]$
+- Apply definition of Potential Outcomes: 
+  - $\mathbb{E}[Y_{i,t}(g) - Y_{i,g-1}(g) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty]$
+- Use No Anticipation to substitute $Y_{i,g-1}(\infty)$ for $Y_{i,g-1}(g)$:
+  - $\mathbb{E}[Y_{i,t}(g) - Y_{i,g-1}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty]$
+- Add and subtract $\mathbb{E}[Y_{i,t}(\infty) | G_i=g]$:
+  - $\mathbb{E}[Y_{i,t}(g) - Y_{i,g-1}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty] + \mathbb{E}[Y_{i,t}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) | G_i=g]$
+- Rearrange terms:
+  - $\mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | G_i=g] + \underbrace{\mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty]}_{=0}$
+- QED:
+  - $\tau(g, t) = \mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | G_i=g]$
+
+
+## Callaway & Sant’Anna (2021): Aggregation {.smaller}
+
+- If have a large number of observations and relatively few groups/periods, can report $\hat{\tau}(g, t)$’s directly. 
+- If there are many groups/periods, the $\hat{\tau}(g, t)$’s may be very imprecisely estimated and/or too numerous to report.
+- In these cases, it is often desirable to report meaningful averages of the $\hat{\tau}(g, t)$’s.
+- Four aggregation schemes:
+  - `Simple`:
+    - Computes a single weighted average of all group-time average treatment effects with weights proportional to group size.
+  - `Dynamic`: 
+    - Computes event-study parameters which average the $\hat{\tau}(g, t)$’s at a particular lag since (or lengths of exposure to) the treatment.
+    - Can also be constructed for k < 0 to estimate "pre-trends".
+  - `Group`:
+    - Computes group averages which average the $\hat{\tau}(g, t)$’s for a particular cohort treated a $g$.
+  - `Calendar`:
+    - Computes "calendar averages" which average the $\hat{\tau}(g, t)$’s for a particular calendar time (year).
+
+  
+## Callaway & Sant’Anna (2021): Further Variants
+
+- `Anticipation`: 
+  - In many applications, units may observe that an intervention is about to occur, so that they change their behaviors before the intervention is actually implemented.
+  - Straightforward adaptation: if there is one period of anticipation, set the base period to $g−2$ rather than $g−1$, so that:
+    - $\tau(g, t) = \mathbb{E}[Y_{i,t} - Y_{i,g-2} | G_i=g] - \mathbb{E}[Y_{i,t} - Y_{i,g-2} | G_i = \infty]$
+
+
+::: {.fragment}
+
+- `Covariates`:
+  - Staggered timing estimator can also be extended to include covariates:
+    - (1) Conditional outcome regression.
+    - (2) Inverse Probability Weighting.
+    - (3) Doubly Robust Estimation.
+
+:::
+
+
+
+
+## Callaway & Sant’Anna (2021): Example {.smaller}
+
+- Assess the impact of job displacement (i.e. losing job w/o own fault, e.g. mass layoff) on income of 1,298 individuals.
+  
+:::columns
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(did) # Load the 'did' package
+library(fixest) # Load the 'fixest' package
+temp_file <- tempfile(fileext = ".RData") # Define a temporary file path to save the downloaded file
+# Download the file from Dropbox
+download.file("https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&dl=1", temp_file, mode = "wb")
+load(temp_file) # Load the RData file into the R session
+rm(temp_file) # Optionally, remove the temporary file
+
+
+# Check the structure of the loaded data
+head(job_displacement_data)
+
+# run TWFE
+fixest::feols(income ~ i(year >= group) | id + year,
+              data=job_displacement_data,
+              cluster=c("id", "year"))
+
+```
+
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+#| eval: true
+
+library(did) # Load the 'did' package
+library(fixest) # Load the 'fixest' package
+temp_file <- tempfile(fileext = ".RData") # Define a temporary file path to save the downloaded file
+# Download the file from Dropbox
+download.file("https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&dl=1", temp_file, mode = "wb")
+load(temp_file) # Load the RData file into the R session
+rm(temp_file) # Optionally, remove the temporary file
+
+
+# Check the structure of the loaded data
+head(job_displacement_data)
+
+# run TWFE
+fixest::feols(income ~ i(year >= group) | id + year,
+              data=job_displacement_data,
+              cluster=c("id", "year"))
+
+
+
+```
+
+
+
+
+:::
+
+:::
+
+
+
+## Callaway & Sant’Anna (2021): Example cont'd {.smaller}
+
+- Assess the impact of job displacement (i.e. losing job w/o own fault, e.g. mass layoff) on income of 1,298 individuals.
+  
+:::columns
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+# run command to obtain 64 (8 years * 8 groups) Tau(t,g)'s
+result <- att_gt(
+  yname = "income",
+  tname = "year",
+  idname = "id",
+  gname = "group",
+  xformla = ~ female + white + occ_score, #  ~ 1
+  data = job_displacement_data,
+  allow_unbalanced_panel = TRUE,
+  control_group = "nevertreated", # "notyettreated"
+  anticipation = 0,
+  clustervars = "id",
+  est_method = "dr", # "reg", "ipw"
+  )
+
+# aggregate results over time since treatment
+result_es <- aggte(result, type="dynamic")
+ggdid(result_es)
+
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.width: 7
+#| fig.height: 3.5
+
+library(did) # Load the 'did' package
+library(fixest) # Load the 'fixest' package
+temp_file <- tempfile(fileext = ".RData") # Define a temporary file path to save the downloaded file
+# Download the file from Dropbox
+download.file("https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&dl=1", temp_file, mode = "wb")
+load(temp_file) # Load the RData file into the R session
+rm(temp_file) # Optionally, remove the temporary file
+
+# run command to obtain 64 (8 years * 8 groups) Tau(t,g)'s
+result <- att_gt(
+  yname = "income",
+  tname = "year",
+  idname = "id",
+  gname = "group",
+  xformla = ~ female + white + occ_score, #  ~ 1
+  data = job_displacement_data,
+  allow_unbalanced_panel = TRUE,
+  control_group = "nevertreated", # "notyettreated"
+  anticipation = 0,
+  clustervars = "id",
+  est_method = "dr", # "reg", "ipw"
+  )
+
+# aggregate results over time since treatment
+result_es <- aggte(result, type="dynamic")
+ggdid(result_es)
+
+
+```
+
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+# aggregate results over groups and overall
+result_overall <- aggte(result, type="group")
+summary(result_overall)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+library(did) # Load the 'did' package
+library(fixest) # Load the 'fixest' package
+temp_file <- tempfile(fileext = ".RData") # Define a temporary file path to save the downloaded file
+# Download the file from Dropbox
+download.file("https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&dl=1", temp_file, mode = "wb")
+load(temp_file) # Load the RData file into the R session
+rm(temp_file) # Optionally, remove the temporary file
+
+# run command to obtain 64 (8 years * 8 groups) Tau(t,g)'s
+result <- att_gt(
+  yname = "income",
+  tname = "year",
+  idname = "id",
+  gname = "group",
+  xformla = ~ female + white + occ_score, #  ~ 1
+  data = job_displacement_data,
+  allow_unbalanced_panel = TRUE,
+  control_group = "nevertreated", # "notyettreated"
+  anticipation = 0,
+  clustervars = "id",
+  est_method = "dr", # "reg", "ipw"
+  )
+
+# aggregate results over groups and overall
+result_overall <- aggte(result, type="group")
+summary(result_overall)
+```
+
+
+:::
+
+:::
+
+
+## Imputation-based Estimation: Procedure {.smaller}
+
+
+- Recall the TWFE specification (with covariates) with the (heterogeneous) $\tau_{it}$ if PT assumption holds:
+  - $Y_{i,t} = \alpha_i + \gamma_t + \tau_{it} D_{it} + \delta X_{it} + \epsilon_{i,t}$ 
+  - where $D_{it} = T_i \times t$ and $\mathbb{E}[\epsilon_{i,t} | \{D_{it}, X_{it}\}_{t=1}^{T_t}] = 0$
+
+
+::: {.fragment}
+
+- If we have some $t$ where $D_{it}= 0$ for all $i$ (e.g. pre-treatment period observations), `two-stage procedure`: 
+    - 1. Using all observations with $D_{it}= 0$, regress $Y_{i,t}$ on the fixed effect $\alpha_i$ and $\gamma_t$ as well as on the covariates $X_{it}$:
+      - $Y_{i,t}(0) = \alpha_i + \gamma_t + \delta X_{it} + \epsilon_{i,t}$.
+      - Obtain $\hat{Y}_{i,t}(0) = \hat{\alpha}_i + \hat{\gamma}_t + \hat{\delta} X_{it}$.
+    - 2. Regress adjusted outcomes $Y_{i,t} - \hat{Y}_{i,t}(0)$ on $D_{it}$ to obtain $\hat{\tau}_{it}$:
+      - $(Y_{i,t} - \hat{Y}_{i,t}(0)) = \alpha_0 + \tau_{it} D_{it} + \epsilon_{i,t}$.
+
+:::
+
+
+::: {.fragment}
+
+- With `events studies` of the form $Y_{i,t} = \alpha_i + \gamma_t + \sum_{k \neq 0} \tau_{it}^k D_{it}^k + \delta X_{it} + \epsilon_{i,t}$:
+  - 1st stage remains the same.
+  - 2nd stage: Regress adjusted outcomes $Y_{i,t} - \hat{Y}_{i,t}(0)$ on event dummies $D_{it}^k$ to obtain $\hat{\tau}_{it}^k$:
+    - $(Y_{i,t} - \hat{Y}_{i,t}(0)) = \alpha_0 + \sum_{k \neq 0} \tau_{it}^k D_{it}^k + \epsilon_{i,t}$.
+
+:::
+
+
+
+## Imputation-based Estimation: Comparison
+
+- Approaches of [Gardner, Thakral, Tô, and Yap (2024)](https://neilthakral.github.io/files/papers/2sdd.pdf) and [Borusyak, Jaravel, Spiess (2024)](https://academic.oup.com/restud/advance-article/doi/10.1093/restud/rdae007/7601390) are very similar:
+  - Same point estimates, but differ in deriving standard errors. 
+
+
+
+
+::: {.fragment}
+
+- `Key difference to C&S (2021)` is the trade-off between efficiency and strength of identifying assumption:
+  - `Plus`: averaging over multiple pre-treatment periods (instead of one) can increase precision.
+  - `Minus`: parallel trends need to hold for all groups and time periods (instead of only post-treatment parallel trends).
+
+:::
+
+
+## Imputation-based Estimation: Example {.smaller}
+
+- Assess the impact of job displacement (i.e. losing job w/o own fault, e.g. mass layoff) on income of 1,298 individuals.
+  
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: true
+#| eval: false
+
+library(did2s) # Load the 'did' package
+library(tidyverse) # Load the 'tidyverse' package
+temp_file <- tempfile(fileext = ".RData") # Define a temporary file path to save the downloaded file
+# Download the file from Dropbox
+download.file("https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&dl=1", temp_file, mode = "wb")
+load(temp_file) # Load the RData file into the R session
+rm(temp_file) # Optionally, remove the temporary file
+
+job_displacement_data <- job_displacement_data |> 
+  # create time-variant treatment indicator D_it
+  mutate(d_it = case_when(
+    group == 0 ~ 0,
+    year >= group ~ 1,
+    TRUE ~ 0)
+  ) |>
+  # create releative event-time indicator D_it_k
+  mutate(d_it_k = case_when(
+    group == 0 ~ Inf,
+    TRUE ~ year - group)
+  )
+
+
+# Static model
+result <- did2s(
+  job_displacement_data,
+  yname = "income",
+  first_stage = ~ occ_score | id + year, # only time-variant covariates
+  second_stage = ~ d_it,
+  treatment = "d_it",
+  cluster_var = "id"
+)
+
+fixest::esttable(result)
+
+
+# Event Study
+result <- did2s(
+  job_displacement_data,
+  yname = "income",
+  first_stage = ~ occ_score | id + year, # only time-variant covariates
+  second_stage = ~ i(d_it_k, ref = c(-3, Inf)),
+  treatment = "d_it",
+  cluster_var = "id"
+)
+
+# Dynamic TWFE
+twfe <- feols(income ~ i(d_it_k, ref = c(-3, Inf)) + occ_score | id + year,
+              data=job_displacement_data,
+              cluster=c("id", "year"))
+
+fixest::iplot(list(result, twfe), main = "Event study: Staggered treatment", 
+              xlab = "Relative time to treatment", col = c("#005e73", "#00C1D4") , ref.line = -0.5)
+# Legend
+legend(x=5, y=30000, col = c("#005e73", "#00C1D4"), pch = c(20, 17), 
+       legend = c("Two-stage estimate", "Dynamic TWFE"))
+
+```
+
+
+:::
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| fig.width: 8
+#| fig.height: 5
+
+library(did2s) # Load the 'did' package
+library(tidyverse) # Load the 'tidyverse' package
+temp_file2 <- tempfile(fileext = ".RData") # Define a temporary file path to save the downloaded file
+# Download the file from Dropbox
+download.file("https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&dl=1", temp_file2, mode = "wb")
+load(temp_file2) # Load the RData file into the R session
+rm(temp_file2) # Optionally, remove the temporary file
+
+job_displacement_data <- job_displacement_data |> 
+  # create time-variant treatment indicator D_it
+  mutate(d_it = case_when(
+    group == 0 ~ 0,
+    year >= group ~ 1,
+    TRUE ~ 0)
+  ) |>
+  # create releative event-time indicator D_it_k
+  mutate(d_it_k = case_when(
+    group == 0 ~ Inf,
+    TRUE ~ year - group)
+  )
+
+
+# Static model
+result <- did2s(
+  job_displacement_data,
+  yname = "income",
+  first_stage = ~ occ_score | id + year, # only time-variant covariates
+  second_stage = ~ d_it,
+  treatment = "d_it",
+  cluster_var = "id"
+)
+
+# fixest::esttable(result)
+result
+
+# Event Study
+result <- did2s(
+  job_displacement_data,
+  yname = "income",
+  first_stage = ~ occ_score | id + year, # only time-variant covariates
+  second_stage = ~ i(d_it_k, ref = c(-3, Inf)),
+  treatment = "d_it",
+  cluster_var = "id"
+)
+
+# Dynamic TWFE
+twfe <- feols(income ~ i(d_it_k, ref = c(-3, Inf)) | id + year,
+              data=job_displacement_data,
+              cluster=c("id", "year"))
+
+fixest::iplot(list(result, twfe), main = "Event study: Staggered treatment", 
+              xlab = "Relative time to treatment", col = c("#005e73", "#00C1D4") , ref.line = -0.5)
+# Legend
+legend(x=5, y=30000, col = c("#005e73", "#00C1D4"), pch = c(20, 17), 
+       legend = c("Two-stage estimate", "Dynamic TWFE"))
+
+
+```
+
+
+:::
+
+::::
+
+
+
+
+# Testing for Parallel Trends {data-stack-name="PT Testing"}
+
+## Testing for Pre-existing Trends
+
+- In most DiD applications we have several periods before anyone was treated.
+- We can test whether the groups were moving in parallel prior to the treatment.
+  - If so, then assumption that confounding factors are stable seems more plausible.
+  - If not, then it’s relatively implausible that would have magically started moving in parallel after treatment date.
+- `Event study plot` is a common way to visualize pre-trends, which van be generated based on:
+  - Dynamic TWFE (not robust with staggered timing).
+  - Comparision-based estimators.
+  - Imputation-based, two-stage estimators.
+
+
+## Issues with Pre-existing Trends [(Roth, 2022)](https://www.jonathandroth.com/assets/files/roth_pretrends_testing.pdf)
+
+- Parallel pre-trends don't necessarily imply parallel (counterfactual) post-treatment trends.
+  - If other policies change at the same time as the one of interest can produce parallel pre-trends but non-parallel post-trends.
+- `Low power`: even if pre-trends are non-zero, we may fail to detect it statistically
+- `Distortions from pre-testing`: if we only analyze cases without statistically significant pre-trends, this introduces a form of selection bias (`pre-test bias` which can make things worse).
+- If we fail the pre-test, what next? May still want to write a paper (especially if violation is "small").
+
+
+
+## Issues with Pre-existing Trends [(Roth, 2022)](https://www.jonathandroth.com/assets/files/roth_pretrends_testing.pdf) {.smaller}
+
+
+:::columns
+
+::: {.column width="50%"}
+
+- `Power issues in pre-trend testing`: We can’t reject zero pre-trend, but we also can’t reject pre-trends that under smooth extrapolations to the
+post-treatment period would produce substantial bias.
+
+![](_images/8/did_power.png){.r-stretch fig-align="center" width="100%"}
+
+:::
+
+::: {.column width="50%"}
+
+- `Distortions from pre-testing`: If we happen to draw sample from the population where pre-trends are insignificant, the treatment effect we discover later on might be significantly biased (upwards in this example).
+
+
+![](_images/8/did_selection.png){.r-stretch fig-align="center" width="100%"}
+
+:::
+
+:::
+
+
+
+## Solutions to Parallel Trends Testing
+
+
+- [Roth (2022)](https://www.jonathandroth.com/assets/files/roth_pretrends_testing.pdf): 
+  - Diagnostics of power and distortions from pre-testing.
+    - Power: calculates the slope of a linear violation of parallel trends that a pre-trends test would detect a specified fraction of the time.
+    - Distortions: calculates the bias that would result from only analyzing cases with statistically significant pre-trends.
+  - R package ['pretrends'](https://github.com/jonathandroth/pretrends)
+
+- [Rambachan and Roth (2022)](https://asheshrambachan.github.io/assets/files/hpt-draft.pdf): 
+  - Formal sensitivity analysis that avoids pre-testing:
+    - Put bounds to the unobservable post-treatment trend: how different could it be from the pre-treatment trend to invalidate the DiD estimate?
+  - R package ['HonestDiD'](https://github.com/asheshrambachan/HonestDiD?tab=readme-ov-file#honestdid)
+
+
 
 
 

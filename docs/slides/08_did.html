@@ -8,7 +8,7 @@
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.4.536">
+  <meta name="generator" content="quarto-1.4.554">
 
   <meta name="author" content="Christoph Ihl">
   <title>(8) Difference-in-Differences</title>
@@ -412,7 +412,7 @@ Christoph Ihl
     </div>
 </div>
 
-  <p class="date">Tuesday, 18. June 2024</p>
+  <p class="date">Monday, 24. June 2024</p>
 </section>
 <section>
 <section id="basic-model" class="title-slide slide level1 center" data-stack-name="Basic Model">
@@ -520,7 +520,7 @@ div.callout-note{border-left-color:#00C1D4 !important}div.callout-note.callout-s
 <section id="how-did-estimation-works" class="slide level2">
 <h2>How DiD Estimation Works</h2>
 
-<img data-src="_images/_8/did.gif" class="r-stretch"></section>
+<img data-src="_images/8/did.gif" class="r-stretch"></section>
 <section id="diff-in-diffs-regression" class="slide level2 smaller">
 <h2>Diff-in-Diffs Regression</h2>
 <ul>
@@ -749,7 +749,7 @@ RMSE: 9,428.0   Adj. R2: 0.017819</code></pre>
 </ul></li>
 </ul>
 </section>
-<section id="handling-of-confounding-covariates" class="slide level2">
+<section id="handling-of-confounding-covariates" class="slide level2 smaller">
 <h2>Handling of Confounding Covariates</h2>
 <ul>
 <li>Most estimation approaches treat <strong>all covariates as time-invariant</strong>:
@@ -1013,12 +1013,12 @@ ordid(yname = "re", tname = "year", idname = "id", dname = "ever_treated",
 <span id="cb16-19"><a></a><span class="co"># predict outcome difference delta_mu among treated</span></span>
 <span id="cb16-20"><a></a>delta_mu <span class="ot">&lt;-</span> lrnr_mu<span class="sc">$</span><span class="fu">predict</span>(task_mu, <span class="at">row_ids =</span> <span class="fu">which</span>(data<span class="sc">$</span>ever_treated <span class="sc">==</span> <span class="dv">1</span>))<span class="sc">$</span>response</span>
 <span id="cb16-21"><a></a></span>
-<span id="cb16-22"><a></a>mu1 <span class="ot">&lt;-</span> data<span class="sc">$</span>re_78[data<span class="sc">$</span>ever_treated <span class="sc">==</span> <span class="dv">1</span>]</span>
-<span id="cb16-23"><a></a>mu2 <span class="ot">&lt;-</span> data<span class="sc">$</span>re_75[data<span class="sc">$</span>ever_treated <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb16-22"><a></a>Y1 <span class="ot">&lt;-</span> data<span class="sc">$</span>re_78[data<span class="sc">$</span>ever_treated <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb16-23"><a></a>Y0 <span class="ot">&lt;-</span> data<span class="sc">$</span>re_75[data<span class="sc">$</span>ever_treated <span class="sc">==</span> <span class="dv">1</span>]</span>
 <span id="cb16-24"><a></a></span>
-<span id="cb16-25"><a></a><span class="fu">mean</span>( (mu1 <span class="sc">-</span> mu2) <span class="sc">-</span> delta_mu )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb16-25"><a></a><span class="fu">mean</span>( (Y1 <span class="sc">-</span> Y0) <span class="sc">-</span> delta_mu )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2215.785</code></pre>
+<pre><code>[1] 2188.271</code></pre>
 </div>
 </div>
 </section>
@@ -1111,7 +1111,7 @@ ipwdid(yname = "re", tname = "year", idname = "id", dname = "ever_treated",
 <span id="cb20-25"><a></a></span>
 <span id="cb20-26"><a></a><span class="fu">mean</span>( (Y1<span class="sc">-</span>Y0)<span class="sc">/</span>P <span class="sc">*</span> (T <span class="sc">-</span> ehat)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ehat) ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2923.241</code></pre>
+<pre><code>[1] 2906.464</code></pre>
 </div>
 </div>
 </section>
@@ -1205,25 +1205,700 @@ drdid(yname = "re", tname = "year", idname = "id", dname = "ever_treated",
 <span id="cb24-35"><a></a></span>
 <span id="cb24-36"><a></a><span class="fu">mean</span>( ((Y1<span class="sc">-</span>Y0) <span class="sc">-</span> delta_mu) <span class="sc">*</span> (T <span class="sc">-</span> ehat)<span class="sc">/</span>(P<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>ehat)) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2326.225</code></pre>
+<pre><code>[1] 2283.593</code></pre>
 </div>
 </div>
-</section>
-<section id="testing-for-parallel-trends" class="slide level2">
-<h2>Testing for Parallel Trends</h2>
-<ul>
-<li>Next week!</li>
-</ul>
 </section></section>
 <section>
-<section id="staggered-adoption" class="title-slide slide level1 center" data-stack-name="Staggered Adoption">
-<h1>Staggered Adoption</h1>
+<section id="staggered-treatment-timing" class="title-slide slide level1 center" data-stack-name="Staggered Timing">
+<h1>Staggered treatment Timing</h1>
 
 </section>
-<section id="staggered-adoption-1" class="slide level2">
-<h2>Staggered Adoption</h2>
+<section id="staggered-timing" class="slide level2 smaller">
+<h2>Staggered Timing</h2>
 <ul>
-<li>Next week!</li>
+<li>Remember basic DiD model:
+<ul>
+<li>Two periods and a common treatment date.</li>
+<li>Identification from parallel trends and no anticipation.</li>
+</ul></li>
+<li>Active recent literature has focused on relaxing the first assumption:
+<ul>
+<li><code>What if there are multiple periods and units adopt treatment at different times?</code></li>
+<li>Maintaining parallel trends and no anticipation assumptions.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li><code>Notation:</code>
+<ul>
+<li>Panel of observations <span class="math inline">\(i\)</span> and time periods <span class="math inline">\(t = 1 ... T_t\)</span>.</li>
+<li>Units adopt a binary treatment at different dates <span class="math inline">\(G_i \in (1, ..., T_t) \cup \infty\)</span>.
+<ul>
+<li>where <span class="math inline">\(G_i = \infty\)</span> means <strong>never-treated</strong>.</li>
+</ul></li>
+<li>Potential outcomes <span class="math inline">\(Y_{it}(g)\)</span> depend on time (<span class="math inline">\(t\)</span>) and time you were first treated (<span class="math inline">\(g\)</span>).</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Literature is now starting to consider cases with continuous treatment &amp; treatments that turn on/off.
+<ul>
+<li>still developing; for a review see <a href="https://academic.oup.com/ectj/article-abstract/26/3/C1/6604378">de Chaisemartin and D’Haultfœuille (2023)</a>.</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="extending-the-identifying-assumptions" class="slide level2 smaller">
+<h2>Extending the Identifying Assumptions</h2>
+<ul>
+<li>Key identifying assumptions from the canonical model are extended in a natural way:</li>
+</ul>
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Assumption (A.stpt) “Parallel Trends”</strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math inline">\(\mathbb{E}[Y_{i,t}(\infty) - Y_{i,t-1}(\infty) | G_i=g] = \mathbb{E}[Y_{i,t-1}(\infty) - Y_{i,t}(\infty) | G_i=g'] \quad \forall g, g', t\)</span>.</p>
+</div>
+</div>
+</div>
+<ul>
+<li>Intuitively, says that if treatment hadn’t happened, all “adoption cohorts” would have parallel average outcomes in all periods. (Note: could impose slightly weaker versions, e.g.&nbsp;only require PT post-treatment).</li>
+</ul>
+<div class="fragment">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Assumption (A.stna) “No Anticipation”</strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math inline">\(\mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | T_i=1] = 0 \quad\)</span> or <span class="math inline">\(\quad Y_{i,t}(g) = Y_{i,t}(\infty) \quad \forall t &lt; g\)</span></p>
+</div>
+</div>
+</div>
+<ul>
+<li>Treatment has no effect on the treatment group before it is administered.</li>
+</ul>
+</div>
+</section>
+<section id="twfe-regression-with-staggered-timing" class="slide level2 smaller">
+<h2>TWFE Regression with Staggered Timing</h2>
+<ul>
+<li>Suppose we extend Two-way fixed effects (TWFE) regression to staggered treatment timing:
+<ul>
+<li><span class="math inline">\(Y_{i,t} = \alpha_i + \gamma_t + \beta D_{it} + \epsilon_{i,t}\)</span></li>
+<li>where <span class="math inline">\(D_{it} = 1[t \geq G_i]\)</span> is an indicator for whether the unit has been treated by time <span class="math inline">\(t\)</span>.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>Given no anticipation and parallel trends across all adoption cohorts:
+<ul>
+<li>if <code>treatment effect is constant</code> across time and units, <span class="math inline">\(Y_{it}(g) - Y_{it}(\infty) \equiv \tau\)</span>, <code>identification possible</code>: <span class="math inline">\(\tau = \beta\)</span>.</li>
+<li>if <code>treatment effect is heterogeneous</code>, i.e.&nbsp;depends on time since treatement, <span class="math inline">\(Y_{it}(t-r) - Y_{it}(\infty) \equiv \tau_r\)</span>, then <code>identification fails</code>, because some <span class="math inline">\(\tau_{r}\)</span>’s may get negative weights.</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>Reason</strong>:
+<ul>
+<li><code>Clean comparisons</code>: DiD’s between treated and not-yet-treated units.</li>
+<li><code>Forbidden comparisons</code>: DiD’s between already-treated units (who began treatment at different times).
+<ul>
+<li>can lead to negative weights, if treatment effects in the already treated “control group” change over time.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="forbidden-comparisons-in-twfe-intuition" class="slide level2 smaller">
+<h2>Forbidden Comparisons in TWFE: Intuition</h2>
+<ul>
+<li><ol type="1">
+<li>Suppose two period model with two groups: <code>always treated</code> (in both periods) &amp; <code>switchers</code> (treated only in period 2).</li>
+</ol>
+<ul>
+<li>With two periods, <span class="math inline">\(Y_{i,t} = \alpha_i + \gamma_t + \beta D_{it} + \epsilon_{i,t}\)</span> is the same as <span class="math inline">\(\Delta Y_{i} = \alpha +  \beta \Delta D_{i} + u_i\)</span> (by first-differencing).</li>
+<li><span class="math inline">\(\Delta D_{i} = 1\)</span> for switchers and <span class="math inline">\(0\)</span> for the control group of always treated, thus:</li>
+<li><span class="math inline">\(\hat{\beta} = \left( \overline{Y}_{\text{switchers}, 2} - \overline{Y}_{\text{switchers}, 1} \right) - \left( \overline{Y}_{\text{AT}, 2} - \overline{Y}_{\text{AT}, 1} \right)\)</span></li>
+<li>Problem: if treatment effect for always-treated grows over time, <span class="math inline">\(\hat{\beta}\)</span> can get negative weights.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li><ol start="2" type="1">
+<li>Frisch-Waugh-Lovell theorem says that we can obtain <span class="math inline">\(\beta\)</span> in <span class="math inline">\(Y_{i,t} = \alpha_i + \gamma_t + \beta D_{it} + \epsilon_{i,t}\)</span> in two steps:</li>
+</ol>
+<ul>
+<li><ol type="1">
+<li>Regress <span class="math inline">\(D_{i,t}\)</span> on fixed effects (in a linear probability model - LPM): <span class="math inline">\(D_{i,t} = \tilde{\alpha}_i + \tilde{\gamma}_t + \tilde{\epsilon}_{i,t}\)</span>.</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Regress <span class="math inline">\(Y_{i,t}\)</span> on <span class="math inline">\(D_{i,t} - \hat{D}_{i,t}\)</span>, thus: <span class="math inline">\(\beta = \frac{\mathbb{E}(Y_{i,t}(D_{i,t} - \hat{D}_{i,t}))}{Var(D_{i,t} - \hat{D}_{i,t})}\)</span>.</li>
+</ol></li>
+<li>However, LPMs can predict <span class="math inline">\(\hat{D}_{i,t} &gt; 1\)</span>, and <span class="math inline">\(Y_{it}\)</span> can get negative weight.</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><ol start="3" type="1">
+<li>Even if weights are non-negative (i.e.&nbsp;individual <span class="math inline">\(\tau_i\)</span>’s are constant - no dynamics), <span class="math inline">\(\beta\)</span> might still be biased:</li>
+</ol>
+<ul>
+<li><span class="math inline">\(\beta = \sum_{i=1}^{N} \sum_{t=1}^{T_t} w_{it} \beta_{it}\)</span>: <span class="math inline">\(w_{it}\)</span> is inversely proportional to the variance of <span class="math inline">\(\beta_{it}\)</span>.
+<ul>
+<li>Proportional to available information for <span class="math inline">\(i\)</span>, i.e.&nbsp;the number of observations pre and post treatment.</li>
+</ul></li>
+<li>But are individuals in the middle of the panel also the most representative of the population?</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="dynamic-twfe-regression-with-staggered-timing" class="slide level2 smaller">
+<h2>Dynamic TWFE Regression with Staggered Timing</h2>
+<ul>
+<li><a href="https://www.sciencedirect.com/science/article/abs/pii/S030440762030378X">Sun and Abraham (2021)</a> show that similar issues arise with dynamic TWFE (“event study”) specifications:
+<ul>
+<li><span class="math inline">\(Y_{i,t} = \alpha_i + \gamma_t + \sum_{k \neq 0} \beta_k D_{it}^k + \epsilon_{i,t}\)</span></li>
+<li>where <span class="math inline">\(D_{it}^k = 1[t - G_i = k]\)</span> are leading and lagging “event time” dummies.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>This dynamic specification yields a sensible causal estimand when there is <code>heterogeneity only in time since treatment</code>.</li>
+<li>However, if there is heterogeneity in dynamic treatment effects also <code>across adoption cohorts</code>, then:
+<ul>
+<li>Like for static TWFE, <span class="math inline">\(\beta_k\)</span> may put negative weight on treatment effects after k periods for some units.</li>
+<li>Furthermore, <span class="math inline">\(\beta_k\)</span> may be <strong>“contaminated”</strong> by treatment effects at different leads and lags <span class="math inline">\(k' \neq k\)</span>.</li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Thus, interpreting <span class="math inline">\(\beta_k\)</span> as estimates …
+<ul>
+<li>of the dynamic effects of treatment (<span class="math inline">\(k&gt;0\)</span>) may be misleading.</li>
+<li>for pre-trends tests (<span class="math inline">\(k&lt;0\)</span>) may also be misleading.
+<ul>
+<li>We will return to pre-trends tests later.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="new-did-estimators-for-staggered-timing" class="slide level2 smaller">
+<h2>New DiD-Estimators for Staggered Timing</h2>
+<ul>
+<li>Estimators based on <strong>clean aggregated comparisons</strong>:
+<ul>
+<li><p><a href="https://www.sciencedirect.com/science/article/abs/pii/S0304407620303948">Callaway and Sant’Anna (2021)</a>: R package <a href="https://cran.r-project.org/web/packages/did/index.html">‘did’</a> (<strong>Focus</strong>)</p></li>
+<li><p><a href="https://www.sciencedirect.com/science/article/abs/pii/S030440762030378X">Sun and Abraham (2021)</a>: R package <a href="https://cran.r-project.org/web/packages/fixest/index.html">‘fixest’</a></p></li>
+</ul></li>
+<li>Estimators based on <strong>imputation</strong>:
+<ul>
+<li><a href="https://neilthakral.github.io/files/papers/2sdd.pdf">Gardner, Thakral, Tô, and Yap (2024)</a>: R package <a href="https://cran.r-project.org/web/packages/did2s/index.html">‘did2s’</a> (<strong>Focus</strong>)</li>
+<li><a href="https://academic.oup.com/restud/advance-article/doi/10.1093/restud/rdae007/7601390">Borusyak, Jaravel, Spiess (2024)</a>: R package <a href="https://cran.r-project.org/web/packages/didimputation/index.html">‘did_imputation’</a></li>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3906345">Wooldridge (2021)</a>: R package <a href="https://cran.r-project.org/web/packages/etwfe/index.html">‘etwfe’</a></li>
+</ul></li>
+<li>Estimators that can handle <strong>non-absorbing and/or non-binary treatments</strong>:
+<ul>
+<li><a href="https://www.aeaweb.org/articles?id=10.1257/aer.20181169">de Chaisemartin and D’Haultfoeuille (2020)</a>: R package <a href="https://cran.r-project.org/web/packages/DIDmultiplegt/index.html">‘DIDmultiplegt’</a></li>
+</ul></li>
+<li>Estimators based on <strong>stacking</strong>:
+<ul>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3315238">Cengiz, Dube, Lindner, and Zipperer (2019)</a></li>
+<li><a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4433863">Dube, Girardi, Jorda, and Taylor (2023)</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="estimator-by-callaway-santanna-2021" class="slide level2 smaller">
+<h2>Estimator by Callaway &amp; Sant’Anna (2021)</h2>
+<ul>
+<li><a href="https://www.sciencedirect.com/science/article/abs/pii/S0304407620303948">Callaway &amp; Sant’Anna (2021)</a> define the <code>group-time-specific</code> treatment effect on the treated:
+<ul>
+<li><span class="math inline">\(\tau(g, t) = \mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | G_i=g]\)</span>, with <span class="math inline">\(t \geq g\)</span>.</li>
+<li>ATT in period <span class="math inline">\(t\)</span> for units first treated in period <span class="math inline">\(g\)</span>.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>Under PT and No Anticipation, it can be identified as:
+<ul>
+<li><span class="math inline">\(\tau(g, t) = \underbrace{\mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i=g]}_{\text{change for cohort g}} - \underbrace{\mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i = \infty]}_{\text{change for never-treated}}\)</span></li>
+<li>Similar to the basic model, this is a two-group two-period comparison.
+<ul>
+<li>Similar identification proof (next).</li>
+</ul></li>
+<li>Differences:
+<ul>
+<li><ol type="1">
+<li>Period <span class="math inline">\(g-1\)</span> is pre-treatment period (right before cohort g becomes treated).</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>More flexibility in terms of comparison group: (a) never-treated, (b) not-yet-treated, (c) not-yet-but-eventually-treated, (d) last-to-be-treated.</li>
+</ol></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Sample version of <span class="math inline">\(\tau(g, t)\)</span>:
+<ul>
+<li><span class="math inline">\(\hat{\tau}(g, t) = \frac{1}{N_{g}} \sum_{i=1}^{N_g} \left( Y_{i,t} - Y_{i,g-1} \right) 1[G_i = g] - \frac{1}{N_{\infty}} \sum_{i=1}^{N_{\infty}} \left( Y_{i,t} - Y_{i,g-1} \right) 1[G_i = \infty]\)</span></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="callaway-santanna-2021-proof" class="slide level2 smaller">
+<h2>Callaway &amp; Sant’Anna (2021): Proof</h2>
+<ul>
+<li>Start with identification result and work backwards:
+<ul>
+<li><span class="math inline">\(\mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i=g] - \mathbb{E}[Y_{i,t} - Y_{i,g-1} | G_i = \infty]\)</span></li>
+</ul></li>
+<li>Apply definition of Potential Outcomes:
+<ul>
+<li><span class="math inline">\(\mathbb{E}[Y_{i,t}(g) - Y_{i,g-1}(g) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty]\)</span></li>
+</ul></li>
+<li>Use No Anticipation to substitute <span class="math inline">\(Y_{i,g-1}(\infty)\)</span> for <span class="math inline">\(Y_{i,g-1}(g)\)</span>:
+<ul>
+<li><span class="math inline">\(\mathbb{E}[Y_{i,t}(g) - Y_{i,g-1}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty]\)</span></li>
+</ul></li>
+<li>Add and subtract <span class="math inline">\(\mathbb{E}[Y_{i,t}(\infty) | G_i=g]\)</span>:
+<ul>
+<li><span class="math inline">\(\mathbb{E}[Y_{i,t}(g) - Y_{i,g-1}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty] + \mathbb{E}[Y_{i,t}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) | G_i=g]\)</span></li>
+</ul></li>
+<li>Rearrange terms:
+<ul>
+<li><span class="math inline">\(\mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | G_i=g] + \underbrace{\mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i=g] - \mathbb{E}[Y_{i,t}(\infty) - Y_{i,g-1}(\infty) | G_i = \infty]}_{=0}\)</span></li>
+</ul></li>
+<li>QED:
+<ul>
+<li><span class="math inline">\(\tau(g, t) = \mathbb{E}[Y_{i,t}(g) - Y_{i,t}(\infty) | G_i=g]\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="callaway-santanna-2021-aggregation" class="slide level2 smaller">
+<h2>Callaway &amp; Sant’Anna (2021): Aggregation</h2>
+<ul>
+<li>If have a large number of observations and relatively few groups/periods, can report <span class="math inline">\(\hat{\tau}(g, t)\)</span>’s directly.</li>
+<li>If there are many groups/periods, the <span class="math inline">\(\hat{\tau}(g, t)\)</span>’s may be very imprecisely estimated and/or too numerous to report.</li>
+<li>In these cases, it is often desirable to report meaningful averages of the <span class="math inline">\(\hat{\tau}(g, t)\)</span>’s.</li>
+<li>Four aggregation schemes:
+<ul>
+<li><code>Simple</code>:
+<ul>
+<li>Computes a single weighted average of all group-time average treatment effects with weights proportional to group size.</li>
+</ul></li>
+<li><code>Dynamic</code>:
+<ul>
+<li>Computes event-study parameters which average the <span class="math inline">\(\hat{\tau}(g, t)\)</span>’s at a particular lag since (or lengths of exposure to) the treatment.</li>
+<li>Can also be constructed for k &lt; 0 to estimate “pre-trends”.</li>
+</ul></li>
+<li><code>Group</code>:
+<ul>
+<li>Computes group averages which average the <span class="math inline">\(\hat{\tau}(g, t)\)</span>’s for a particular cohort treated a <span class="math inline">\(g\)</span>.</li>
+</ul></li>
+<li><code>Calendar</code>:
+<ul>
+<li>Computes “calendar averages” which average the <span class="math inline">\(\hat{\tau}(g, t)\)</span>’s for a particular calendar time (year).</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="callaway-santanna-2021-further-variants" class="slide level2">
+<h2>Callaway &amp; Sant’Anna (2021): Further Variants</h2>
+<ul>
+<li><code>Anticipation</code>:
+<ul>
+<li>In many applications, units may observe that an intervention is about to occur, so that they change their behaviors before the intervention is actually implemented.</li>
+<li>Straightforward adaptation: if there is one period of anticipation, set the base period to <span class="math inline">\(g−2\)</span> rather than <span class="math inline">\(g−1\)</span>, so that:
+<ul>
+<li><span class="math inline">\(\tau(g, t) = \mathbb{E}[Y_{i,t} - Y_{i,g-2} | G_i=g] - \mathbb{E}[Y_{i,t} - Y_{i,g-2} | G_i = \infty]\)</span></li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li><code>Covariates</code>:
+<ul>
+<li>Staggered timing estimator can also be extended to include covariates:
+<ul>
+<li><ol type="1">
+<li>Conditional outcome regression.</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Inverse Probability Weighting.</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>Doubly Robust Estimation.</li>
+</ol></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="callaway-santanna-2021-example" class="slide level2 smaller">
+<h2>Callaway &amp; Sant’Anna (2021): Example</h2>
+<ul>
+<li>Assess the impact of job displacement (i.e.&nbsp;losing job w/o own fault, e.g.&nbsp;mass layoff) on income of 1,298 individuals.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a><span class="fu">library</span>(did) <span class="co"># Load the 'did' package</span></span>
+<span id="cb26-2"><a></a><span class="fu">library</span>(fixest) <span class="co"># Load the 'fixest' package</span></span>
+<span id="cb26-3"><a></a>temp_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".RData"</span>) <span class="co"># Define a temporary file path to save the downloaded file</span></span>
+<span id="cb26-4"><a></a><span class="co"># Download the file from Dropbox</span></span>
+<span id="cb26-5"><a></a><span class="fu">download.file</span>(<span class="st">"https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&amp;dl=1"</span>, temp_file, <span class="at">mode =</span> <span class="st">"wb"</span>)</span>
+<span id="cb26-6"><a></a><span class="fu">load</span>(temp_file) <span class="co"># Load the RData file into the R session</span></span>
+<span id="cb26-7"><a></a><span class="fu">rm</span>(temp_file) <span class="co"># Optionally, remove the temporary file</span></span>
+<span id="cb26-8"><a></a></span>
+<span id="cb26-9"><a></a></span>
+<span id="cb26-10"><a></a><span class="co"># Check the structure of the loaded data</span></span>
+<span id="cb26-11"><a></a><span class="fu">head</span>(job_displacement_data)</span>
+<span id="cb26-12"><a></a></span>
+<span id="cb26-13"><a></a><span class="co"># run TWFE</span></span>
+<span id="cb26-14"><a></a>fixest<span class="sc">::</span><span class="fu">feols</span>(income <span class="sc">~</span> <span class="fu">i</span>(year <span class="sc">&gt;=</span> group) <span class="sc">|</span> id <span class="sc">+</span> year,</span>
+<span id="cb26-15"><a></a>              <span class="at">data=</span>job_displacement_data,</span>
+<span id="cb26-16"><a></a>              <span class="at">cluster=</span><span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"year"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 7
+       id  year group income female white occ_score
+    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
+1 7900002  1984     0  31130      1     1         4
+2 7900002  1985     0  32200      1     1         3
+3 7900002  1986     0  35520      1     1         4
+4 7900002  1987     0  43600      1     1         4
+5 7900002  1988     0  39900      1     1         4
+6 7900002  1990     0  38200      1     1         4</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: income
+Observations: 11,682
+Fixed-effects: id: 1,298,  year: 9
+Standard-errors: Clustered (id &amp; year) 
+                    Estimate Std. Error  t value Pr(&gt;|t|)    
+year &gt;= group::TRUE -6455.36    2041.49 -3.16208 0.013353 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 14,824.0     Adj. R2: 0.674268
+                 Within R2: 0.002425</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="callaway-santanna-2021-example-contd" class="slide level2 smaller">
+<h2>Callaway &amp; Sant’Anna (2021): Example cont’d</h2>
+<ul>
+<li>Assess the impact of job displacement (i.e.&nbsp;losing job w/o own fault, e.g.&nbsp;mass layoff) on income of 1,298 individuals.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a><span class="co"># run command to obtain 64 (8 years * 8 groups) Tau(t,g)'s</span></span>
+<span id="cb29-2"><a></a>result <span class="ot">&lt;-</span> <span class="fu">att_gt</span>(</span>
+<span id="cb29-3"><a></a>  <span class="at">yname =</span> <span class="st">"income"</span>,</span>
+<span id="cb29-4"><a></a>  <span class="at">tname =</span> <span class="st">"year"</span>,</span>
+<span id="cb29-5"><a></a>  <span class="at">idname =</span> <span class="st">"id"</span>,</span>
+<span id="cb29-6"><a></a>  <span class="at">gname =</span> <span class="st">"group"</span>,</span>
+<span id="cb29-7"><a></a>  <span class="at">xformla =</span> <span class="sc">~</span> female <span class="sc">+</span> white <span class="sc">+</span> occ_score, <span class="co">#  ~ 1</span></span>
+<span id="cb29-8"><a></a>  <span class="at">data =</span> job_displacement_data,</span>
+<span id="cb29-9"><a></a>  <span class="at">allow_unbalanced_panel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb29-10"><a></a>  <span class="at">control_group =</span> <span class="st">"nevertreated"</span>, <span class="co"># "notyettreated"</span></span>
+<span id="cb29-11"><a></a>  <span class="at">anticipation =</span> <span class="dv">0</span>,</span>
+<span id="cb29-12"><a></a>  <span class="at">clustervars =</span> <span class="st">"id"</span>,</span>
+<span id="cb29-13"><a></a>  <span class="at">est_method =</span> <span class="st">"dr"</span>, <span class="co"># "reg", "ipw"</span></span>
+<span id="cb29-14"><a></a>  )</span>
+<span id="cb29-15"><a></a></span>
+<span id="cb29-16"><a></a><span class="co"># aggregate results over time since treatment</span></span>
+<span id="cb29-17"><a></a>result_es <span class="ot">&lt;-</span> <span class="fu">aggte</span>(result, <span class="at">type=</span><span class="st">"dynamic"</span>)</span>
+<span id="cb29-18"><a></a><span class="fu">ggdid</span>(result_es)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="08_did_files/figure-revealjs/unnamed-chunk-18-1.png" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a><span class="co"># aggregate results over groups and overall</span></span>
+<span id="cb30-2"><a></a>result_overall <span class="ot">&lt;-</span> <span class="fu">aggte</span>(result, <span class="at">type=</span><span class="st">"group"</span>)</span>
+<span id="cb30-3"><a></a><span class="fu">summary</span>(result_overall)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+aggte(MP = result, type = "group")
+
+Reference: Callaway, Brantly and Pedro H.C. Sant'Anna.  "Difference-in-Differences with Multiple Time Periods." Journal of Econometrics, Vol. 225, No. 2, pp. 200-230, 2021. &lt;https://doi.org/10.1016/j.jeconom.2020.12.001&gt;, &lt;https://arxiv.org/abs/1803.09015&gt; 
+
+
+Overall summary of ATT's based on group/cohort aggregation:  
+       ATT    Std. Error     [ 95%  Conf. Int.]  
+ -6290.805      1664.296  -9552.766   -3028.844 *
+
+
+Group Effects:
+ Group    Estimate Std. Error [95% Simult.  Conf. Band]  
+  1985  -9152.7025   2998.059    -15874.750   -2430.655 *
+  1986  -1863.3794   5769.769    -14799.971   11073.212  
+  1987    816.6743   6509.247    -13777.925   15411.274  
+  1988   6797.5169   4136.877     -2477.913   16072.947  
+  1990 -13962.6186   3847.891    -22590.104   -5335.134 *
+  1991  -7107.5120   5033.109    -18392.415    4177.391  
+  1992 -10570.4752   8649.169    -29963.066    8822.115  
+  1993 -24680.0159   5672.560    -37398.653  -11961.379 *
+---
+Signif. codes: `*' confidence band does not cover 0
+
+Control Group:  Never Treated,  Anticipation Periods:  0
+Estimation Method:  Doubly Robust</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="imputation-based-estimation-procedure" class="slide level2 smaller">
+<h2>Imputation-based Estimation: Procedure</h2>
+<ul>
+<li>Recall the TWFE specification (with covariates) with the (heterogeneous) <span class="math inline">\(\tau_{it}\)</span> if PT assumption holds:
+<ul>
+<li><span class="math inline">\(Y_{i,t} = \alpha_i + \gamma_t + \tau_{it} D_{it} + \delta X_{it} + \epsilon_{i,t}\)</span></li>
+<li>where <span class="math inline">\(D_{it} = T_i \times t\)</span> and <span class="math inline">\(\mathbb{E}[\epsilon_{i,t} | \{D_{it}, X_{it}\}_{t=1}^{T_t}] = 0\)</span></li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li>If we have some <span class="math inline">\(t\)</span> where <span class="math inline">\(D_{it}= 0\)</span> for all <span class="math inline">\(i\)</span> (e.g.&nbsp;pre-treatment period observations), <code>two-stage procedure</code>:
+<ul>
+<li><ol type="1">
+<li>Using all observations with <span class="math inline">\(D_{it}= 0\)</span>, regress <span class="math inline">\(Y_{i,t}\)</span> on the fixed effect <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\gamma_t\)</span> as well as on the covariates <span class="math inline">\(X_{it}\)</span>:</li>
+</ol>
+<ul>
+<li><span class="math inline">\(Y_{i,t}(0) = \alpha_i + \gamma_t + \delta X_{it} + \epsilon_{i,t}\)</span>.</li>
+<li>Obtain <span class="math inline">\(\hat{Y}_{i,t}(0) = \hat{\alpha}_i + \hat{\gamma}_t + \hat{\delta} X_{it}\)</span>.</li>
+</ul></li>
+<li><ol start="2" type="1">
+<li>Regress adjusted outcomes <span class="math inline">\(Y_{i,t} - \hat{Y}_{i,t}(0)\)</span> on <span class="math inline">\(D_{it}\)</span> to obtain <span class="math inline">\(\hat{\tau}_{it}\)</span>:</li>
+</ol>
+<ul>
+<li><span class="math inline">\((Y_{i,t} - \hat{Y}_{i,t}(0)) = \alpha_0 + \tau_{it} D_{it} + \epsilon_{i,t}\)</span>.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>With <code>events studies</code> of the form <span class="math inline">\(Y_{i,t} = \alpha_i + \gamma_t + \sum_{k \neq 0} \tau_{it}^k D_{it}^k + \delta X_{it} + \epsilon_{i,t}\)</span>:
+<ul>
+<li>1st stage remains the same.</li>
+<li>2nd stage: Regress adjusted outcomes <span class="math inline">\(Y_{i,t} - \hat{Y}_{i,t}(0)\)</span> on event dummies <span class="math inline">\(D_{it}^k\)</span> to obtain <span class="math inline">\(\hat{\tau}_{it}^k\)</span>:
+<ul>
+<li><span class="math inline">\((Y_{i,t} - \hat{Y}_{i,t}(0)) = \alpha_0 + \sum_{k \neq 0} \tau_{it}^k D_{it}^k + \epsilon_{i,t}\)</span>.</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="imputation-based-estimation-comparison" class="slide level2">
+<h2>Imputation-based Estimation: Comparison</h2>
+<ul>
+<li>Approaches of <a href="https://neilthakral.github.io/files/papers/2sdd.pdf">Gardner, Thakral, Tô, and Yap (2024)</a> and <a href="https://academic.oup.com/restud/advance-article/doi/10.1093/restud/rdae007/7601390">Borusyak, Jaravel, Spiess (2024)</a> are very similar:
+<ul>
+<li>Same point estimates, but differ in deriving standard errors.</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<ul>
+<li><code>Key difference to C&amp;S (2021)</code> is the trade-off between efficiency and strength of identifying assumption:
+<ul>
+<li><code>Plus</code>: averaging over multiple pre-treatment periods (instead of one) can increase precision.</li>
+<li><code>Minus</code>: parallel trends need to hold for all groups and time periods (instead of only post-treatment parallel trends).</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="imputation-based-estimation-example" class="slide level2 smaller">
+<h2>Imputation-based Estimation: Example</h2>
+<ul>
+<li>Assess the impact of job displacement (i.e.&nbsp;losing job w/o own fault, e.g.&nbsp;mass layoff) on income of 1,298 individuals.</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">library</span>(did2s) <span class="co"># Load the 'did' package</span></span>
+<span id="cb32-2"><a></a><span class="fu">library</span>(tidyverse) <span class="co"># Load the 'tidyverse' package</span></span>
+<span id="cb32-3"><a></a>temp_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".RData"</span>) <span class="co"># Define a temporary file path to save the downloaded file</span></span>
+<span id="cb32-4"><a></a><span class="co"># Download the file from Dropbox</span></span>
+<span id="cb32-5"><a></a><span class="fu">download.file</span>(<span class="st">"https://www.dropbox.com/scl/fi/wnp1hrkz00izr72h6ua1t/job_displacement_data.RData?rlkey=nr15rrbv1ev8ra1kzfa1knux2&amp;dl=1"</span>, temp_file, <span class="at">mode =</span> <span class="st">"wb"</span>)</span>
+<span id="cb32-6"><a></a><span class="fu">load</span>(temp_file) <span class="co"># Load the RData file into the R session</span></span>
+<span id="cb32-7"><a></a><span class="fu">rm</span>(temp_file) <span class="co"># Optionally, remove the temporary file</span></span>
+<span id="cb32-8"><a></a></span>
+<span id="cb32-9"><a></a>job_displacement_data <span class="ot">&lt;-</span> job_displacement_data <span class="sc">|&gt;</span> </span>
+<span id="cb32-10"><a></a>  <span class="co"># create time-variant treatment indicator D_it</span></span>
+<span id="cb32-11"><a></a>  <span class="fu">mutate</span>(<span class="at">d_it =</span> <span class="fu">case_when</span>(</span>
+<span id="cb32-12"><a></a>    group <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb32-13"><a></a>    year <span class="sc">&gt;=</span> group <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb32-14"><a></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>)</span>
+<span id="cb32-15"><a></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb32-16"><a></a>  <span class="co"># create releative event-time indicator D_it_k</span></span>
+<span id="cb32-17"><a></a>  <span class="fu">mutate</span>(<span class="at">d_it_k =</span> <span class="fu">case_when</span>(</span>
+<span id="cb32-18"><a></a>    group <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="cn">Inf</span>,</span>
+<span id="cb32-19"><a></a>    <span class="cn">TRUE</span> <span class="sc">~</span> year <span class="sc">-</span> group)</span>
+<span id="cb32-20"><a></a>  )</span>
+<span id="cb32-21"><a></a></span>
+<span id="cb32-22"><a></a></span>
+<span id="cb32-23"><a></a><span class="co"># Static model</span></span>
+<span id="cb32-24"><a></a>result <span class="ot">&lt;-</span> <span class="fu">did2s</span>(</span>
+<span id="cb32-25"><a></a>  job_displacement_data,</span>
+<span id="cb32-26"><a></a>  <span class="at">yname =</span> <span class="st">"income"</span>,</span>
+<span id="cb32-27"><a></a>  <span class="at">first_stage =</span> <span class="sc">~</span> occ_score <span class="sc">|</span> id <span class="sc">+</span> year, <span class="co"># only time-variant covariates</span></span>
+<span id="cb32-28"><a></a>  <span class="at">second_stage =</span> <span class="sc">~</span> d_it,</span>
+<span id="cb32-29"><a></a>  <span class="at">treatment =</span> <span class="st">"d_it"</span>,</span>
+<span id="cb32-30"><a></a>  <span class="at">cluster_var =</span> <span class="st">"id"</span></span>
+<span id="cb32-31"><a></a>)</span>
+<span id="cb32-32"><a></a></span>
+<span id="cb32-33"><a></a>fixest<span class="sc">::</span><span class="fu">esttable</span>(result)</span>
+<span id="cb32-34"><a></a></span>
+<span id="cb32-35"><a></a></span>
+<span id="cb32-36"><a></a><span class="co"># Event Study</span></span>
+<span id="cb32-37"><a></a>result <span class="ot">&lt;-</span> <span class="fu">did2s</span>(</span>
+<span id="cb32-38"><a></a>  job_displacement_data,</span>
+<span id="cb32-39"><a></a>  <span class="at">yname =</span> <span class="st">"income"</span>,</span>
+<span id="cb32-40"><a></a>  <span class="at">first_stage =</span> <span class="sc">~</span> occ_score <span class="sc">|</span> id <span class="sc">+</span> year, <span class="co"># only time-variant covariates</span></span>
+<span id="cb32-41"><a></a>  <span class="at">second_stage =</span> <span class="sc">~</span> <span class="fu">i</span>(d_it_k, <span class="at">ref =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="cn">Inf</span>)),</span>
+<span id="cb32-42"><a></a>  <span class="at">treatment =</span> <span class="st">"d_it"</span>,</span>
+<span id="cb32-43"><a></a>  <span class="at">cluster_var =</span> <span class="st">"id"</span></span>
+<span id="cb32-44"><a></a>)</span>
+<span id="cb32-45"><a></a></span>
+<span id="cb32-46"><a></a><span class="co"># Dynamic TWFE</span></span>
+<span id="cb32-47"><a></a>twfe <span class="ot">&lt;-</span> <span class="fu">feols</span>(income <span class="sc">~</span> <span class="fu">i</span>(d_it_k, <span class="at">ref =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="cn">Inf</span>)) <span class="sc">+</span> occ_score <span class="sc">|</span> id <span class="sc">+</span> year,</span>
+<span id="cb32-48"><a></a>              <span class="at">data=</span>job_displacement_data,</span>
+<span id="cb32-49"><a></a>              <span class="at">cluster=</span><span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"year"</span>))</span>
+<span id="cb32-50"><a></a></span>
+<span id="cb32-51"><a></a>fixest<span class="sc">::</span><span class="fu">iplot</span>(<span class="fu">list</span>(result, twfe), <span class="at">main =</span> <span class="st">"Event study: Staggered treatment"</span>, </span>
+<span id="cb32-52"><a></a>              <span class="at">xlab =</span> <span class="st">"Relative time to treatment"</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"#005e73"</span>, <span class="st">"#00C1D4"</span>) , <span class="at">ref.line =</span> <span class="sc">-</span><span class="fl">0.5</span>)</span>
+<span id="cb32-53"><a></a><span class="co"># Legend</span></span>
+<span id="cb32-54"><a></a><span class="fu">legend</span>(<span class="at">x=</span><span class="dv">5</span>, <span class="at">y=</span><span class="dv">30000</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"#005e73"</span>, <span class="st">"#00C1D4"</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">17</span>), </span>
+<span id="cb32-55"><a></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Two-stage estimate"</span>, <span class="st">"Dynamic TWFE"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>OLS estimation, Dep. Var.: income
+Observations: 11,448
+Standard-errors: Custom 
+     Estimate Std. Error  t value  Pr(&gt;|t|)    
+d_it -5900.79    2151.88 -2.74215 0.0061132 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+RMSE: 15,051.3   Adj. R2: 0.006894</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="08_did_files/figure-revealjs/unnamed-chunk-22-1.png" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="testing-for-parallel-trends" class="title-slide slide level1 center" data-stack-name="PT Testing">
+<h1>Testing for Parallel Trends</h1>
+
+</section>
+<section id="testing-for-pre-existing-trends" class="slide level2">
+<h2>Testing for Pre-existing Trends</h2>
+<ul>
+<li>In most DiD applications we have several periods before anyone was treated.</li>
+<li>We can test whether the groups were moving in parallel prior to the treatment.
+<ul>
+<li>If so, then assumption that confounding factors are stable seems more plausible.</li>
+<li>If not, then it’s relatively implausible that would have magically started moving in parallel after treatment date.</li>
+</ul></li>
+<li><code>Event study plot</code> is a common way to visualize pre-trends, which van be generated based on:
+<ul>
+<li>Dynamic TWFE (not robust with staggered timing).</li>
+<li>Comparision-based estimators.</li>
+<li>Imputation-based, two-stage estimators.</li>
+</ul></li>
+</ul>
+</section>
+<section id="issues-with-pre-existing-trends-roth-2022" class="slide level2">
+<h2>Issues with Pre-existing Trends <a href="https://www.jonathandroth.com/assets/files/roth_pretrends_testing.pdf">(Roth, 2022)</a></h2>
+<ul>
+<li>Parallel pre-trends don’t necessarily imply parallel (counterfactual) post-treatment trends.
+<ul>
+<li>If other policies change at the same time as the one of interest can produce parallel pre-trends but non-parallel post-trends.</li>
+</ul></li>
+<li><code>Low power</code>: even if pre-trends are non-zero, we may fail to detect it statistically</li>
+<li><code>Distortions from pre-testing</code>: if we only analyze cases without statistically significant pre-trends, this introduces a form of selection bias (<code>pre-test bias</code> which can make things worse).</li>
+<li>If we fail the pre-test, what next? May still want to write a paper (especially if violation is “small”).</li>
+</ul>
+</section>
+<section id="issues-with-pre-existing-trends-roth-2022-1" class="slide level2 smaller">
+<h2>Issues with Pre-existing Trends <a href="https://www.jonathandroth.com/assets/files/roth_pretrends_testing.pdf">(Roth, 2022)</a></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><code>Power issues in pre-trend testing</code>: We can’t reject zero pre-trend, but we also can’t reject pre-trends that under smooth extrapolations to the post-treatment period would produce substantial bias.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<img data-src="_images/8/did_power.png" class="r-stretch quarto-figure quarto-figure-center" style="width:100.0%">
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><code>Distortions from pre-testing</code>: If we happen to draw sample from the population where pre-trends are insignificant, the treatment effect we discover later on might be significantly biased (upwards in this example).</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<img data-src="_images/8/did_selection.png" class="r-stretch quarto-figure quarto-figure-center" style="width:100.0%">
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="solutions-to-parallel-trends-testing" class="slide level2">
+<h2>Solutions to Parallel Trends Testing</h2>
+<ul>
+<li><a href="https://www.jonathandroth.com/assets/files/roth_pretrends_testing.pdf">Roth (2022)</a>:
+<ul>
+<li>Diagnostics of power and distortions from pre-testing.
+<ul>
+<li>Power: calculates the slope of a linear violation of parallel trends that a pre-trends test would detect a specified fraction of the time.</li>
+<li>Distortions: calculates the bias that would result from only analyzing cases with statistically significant pre-trends.</li>
+</ul></li>
+<li>R package <a href="https://github.com/jonathandroth/pretrends">‘pretrends’</a></li>
+</ul></li>
+<li><a href="https://asheshrambachan.github.io/assets/files/hpt-draft.pdf">Rambachan and Roth (2022)</a>:
+<ul>
+<li>Formal sensitivity analysis that avoids pre-testing:
+<ul>
+<li>Put bounds to the unobservable post-treatment trend: how different could it be from the pre-treatment trend to invalidate the DiD estimate?</li>
+</ul></li>
+<li>R package <a href="https://github.com/asheshrambachan/HonestDiD?tab=readme-ov-file#honestdid">‘HonestDiD’</a></li>
+</ul></li>
 </ul>
 </section></section>
 <section id="section" class="title-slide slide level1 center center-x" data-state="hide-menubar">
@@ -1607,6 +2282,24 @@ Thank you for your attention!
         // clear code selection
         e.clearSelection();
       });
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
       function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
         const config = {
           allowHTML: true,
@@ -1643,7 +2336,11 @@ Thank you for your attention!
           try { href = new URL(href).hash; } catch {}
           const id = href.replace(/^#\/?/, "");
           const note = window.document.getElementById(id);
-          return note.innerHTML;
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
         });
       }
       const findCites = (el) => {
